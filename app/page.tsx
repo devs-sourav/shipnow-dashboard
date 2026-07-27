@@ -33,9 +33,9 @@ export default function Home() {
 
   return (
     <div
-      className={`relative h-screen w-full overflow-hidden transition-colors duration-1000 ease-in-out ${
+      className={`relative w-full transition-colors duration-1000 ease-in-out ${
         phase === "done" ? "bg-white" : "bg-[#0B0E14]"
-      }`}
+      } ${showLogin ? "min-h-screen" : "h-screen overflow-hidden"}`}
     >
       {/* ---------------- INTRO LAYER ---------------- */}
       {!showLogin && (
@@ -108,12 +108,12 @@ export default function Home() {
         </div>
       )}
 
-      {/* ---------------- LOGIN LAYER (unchanged) ---------------- */}
+      {/* ---------------- LOGIN LAYER ---------------- */}
       {showLogin && (
-        <main className="h-[1024px] w-full md:w-[1440px] mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 h-full">
+        <main className="min-h-screen w-full sm:h-[1024px] md:w-[1440px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2  sm:h-full">
             {/* LEFT */}
-            <section className="relative flex flex-col items-center h-[844px] sm:h-[1024px] justify-center bg-[#856DF3]">
+            <section className="relative flex flex-col items-center justify-center bg-[#856DF3] py-10 h-[844px] sm:h-[1024px]">
               <div>
                 <Image
                   src="/assets/logo/Logo.png"
@@ -124,7 +124,7 @@ export default function Home() {
                 />
               </div>
 
-              <div className="relative w-[326px] h-[298px] sm:w-[553px] sm:h-[499px]">
+              <div className="relative w-[326px] h-[298px] sm:w-[553px] sm:h-[499px] mt-6">
                 <Image
                   src="/assets/images/login.png"
                   alt="login"
@@ -133,8 +133,8 @@ export default function Home() {
                 />
               </div>
 
-              <div className="mt-[42px] w-[326px] sm:w-[487px] text-center text-white">
-                <h1 className="text-[40px] font-semibold leading-none">
+              <div className="mt-[42px] w-[326px] sm:w-[420px] md:w-[487px] text-center text-white">
+                <h1 className="text-[32px] sm:text-[36px] md:text-[40px] font-semibold leading-none">
                   Welcome to ShipNow
                 </h1>
                 <p className="mx-auto mt-3 text-[16px] text-[#FEFEFE]">
@@ -145,7 +145,7 @@ export default function Home() {
             </section>
 
             {/* RIGHT */}
-            <section className="h-[844px] sm:h-[1024px] flex items-center justify-center bg-white">
+            <section className="flex items-center justify-center bg-white py-10 h-[844px] sm:h-[1024px]">
               <LoginForm />
             </section>
           </div>
@@ -157,7 +157,7 @@ export default function Home() {
         {(phase === "closing" || phase === "opening") && (
           <motion.div
             key="iris"
-            className="pointer-events-none absolute inset-0 z-30 bg-[#0B0E14]"
+            className="pointer-events-none fixed inset-0 z-30 bg-[#0B0E14]"
             initial={{ clipPath: "circle(0% at 50% 50%)" }}
             animate={
               phase === "closing"
