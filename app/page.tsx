@@ -58,7 +58,7 @@ export default function Home() {
             className="relative z-10 flex flex-col items-center gap-5"
             style={{ perspective: 800 }}
           >
-            <h1 className="font-display relative flex text-3xl sm:text-6xl font-semibold tracking-tight md:text-8xl">
+            <h1 className="font-display relative flex text-4xl sm:text-6xl font-semibold tracking-tight md:text-8xl">
               {letters.map((ch, i) => (
                 <motion.span
                   key={i}
