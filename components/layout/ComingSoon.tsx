@@ -168,9 +168,33 @@ export default function ComingSoon({
 
   const progressPct = (timeLeft / duration) * 100;
 
+  const DurationPicker = ({ label }: { label: string }) => (
+    <div className="flex w-full flex-wrap items-center justify-center gap-2 px-2">
+      <span className="w-full text-center text-xs text-gray-400 sm:w-auto sm:text-left">
+        {label}
+      </span>
+      {DURATION_OPTIONS.map((secs) => (
+        <button
+          key={secs}
+          onClick={() => setDuration(secs)}
+          className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+            duration === secs
+              ? "bg-violet-600 text-white"
+              : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+          }`}
+        >
+          {secs}s
+        </button>
+      ))}
+    </div>
+  );
+
   return (
-    <div className="flex h-[700px] sm:min-h-screen items-center justify-center overflow-hidden rounded-2xl bg-white p-4 sm:p-6">
-      <div className="flex w-full h-full max-w-2xl flex-col items-center text-center">
+    // min-h-[100dvh] instead of a fixed pixel height keeps this full-height
+    // on every phone/tablet without ever clipping content, and overflow-y-auto
+    // means nothing gets hidden if a screen is unusually short.
+    <div className="flex min-h-[100dvh] w-full items-center justify-center overflow-y-auto bg-white p-4 sm:min-h-screen sm:p-6">
+      <div className="flex w-full max-w-2xl self-start xs:self-center flex-col items-center py-4 text-center">
         <AnimatePresence mode="wait">
           {!showGame ? (
             // ---------------- COMING SOON VIEW ----------------
@@ -179,10 +203,10 @@ export default function ComingSoon({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col items-center"
+              className="flex w-full flex-col items-center"
             >
               {/* Icon Wrapper */}
-              <div className="relative mb-6 sm:mb-8 flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center">
+              <div className="relative mb-6 flex h-24 w-24 items-center justify-center sm:mb-8 sm:h-32 sm:w-32">
                 {/* Moving Glow */}
                 <motion.div
                   animate={{
@@ -196,7 +220,7 @@ export default function ComingSoon({
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
-                  className="absolute h-24 w-24 sm:h-32 sm:w-32 rounded-full bg-violet-300 blur-3xl"
+                  className="absolute h-24 w-24 rounded-full bg-violet-300 blur-3xl sm:h-32 sm:w-32"
                 />
 
                 {/* Floating Icon */}
@@ -207,14 +231,14 @@ export default function ComingSoon({
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
-                  className="relative z-10 flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-purple-50 shadow-lg"
+                  className="relative z-10 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-purple-50 shadow-lg sm:h-24 sm:w-24"
                 >
-                  <Rocket className="h-8 w-8 sm:h-11 sm:w-11 text-violet-600" />
+                  <Rocket className="h-8 w-8 text-violet-600 sm:h-11 sm:w-11" />
                 </motion.div>
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
+              <h1 className="text-2xl font-semibold text-gray-900 sm:text-3xl">
                 {title} <span className="text-violet-600">Coming Soon</span>
               </h1>
 
@@ -224,7 +248,7 @@ export default function ComingSoon({
               </p>
 
               {/* Status Card */}
-              <div className="mt-6 flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 sm:px-5 py-3">
+              <div className="mt-6 flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 sm:px-5">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
                   <Clock3 className="h-5 w-5 text-violet-600" />
                 </div>
@@ -255,21 +279,8 @@ export default function ComingSoon({
               </div>
 
               {/* Duration picker */}
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-2 px-2 w-full">
-                <span className="text-xs text-gray-400 w-full sm:w-auto">Round length:</span>
-                {DURATION_OPTIONS.map((secs) => (
-                  <button
-                    key={secs}
-                    onClick={() => setDuration(secs)}
-                    className={`rounded-full px-2 py-1 text-xs font-medium transition ${
-                      duration === secs
-                        ? "bg-violet-600 text-white"
-                        : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                    }`}
-                  >
-                    {secs}s
-                  </button>
-                ))}
+              <div className="mt-4">
+                <DurationPicker label="Round length:" />
               </div>
             </motion.div>
           ) : (
@@ -282,36 +293,38 @@ export default function ComingSoon({
               className="flex w-full flex-col items-center"
             >
               {/* Header */}
-              <div className="mb-4 flex w-full items-center justify-between gap-2 rounded-2xl bg-gradient-to-r from-violet-50 via-white to-violet-50 px-3 sm:px-5 py-3 shadow-sm">
+              <div className="mb-4 flex w-full items-center justify-between gap-2 rounded-2xl bg-gradient-to-r from-violet-50 via-white to-violet-50 px-3 py-3 shadow-sm sm:px-5">
                 <div className="text-left">
-                  <p className="text-[10px] sm:text-[11px] font-medium uppercase tracking-wide text-gray-400">
+                  <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 sm:text-[11px]">
                     Score
                   </p>
-                  <p className="text-lg sm:text-2xl font-bold text-violet-600">{score}</p>
+                  <p className="text-lg font-bold text-violet-600 sm:text-2xl">
+                    {score}
+                  </p>
                 </div>
 
                 <div className="flex flex-col items-center">
-                  <p className="text-[10px] sm:text-[11px] font-medium uppercase tracking-wide text-gray-400">
+                  <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 sm:text-[11px]">
                     Time Left
                   </p>
-                  <p className="text-lg sm:text-2xl font-bold text-gray-800">
+                  <p className="text-lg font-bold text-gray-800 sm:text-2xl">
                     {timeLeft}s
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="text-right">
-                    <p className="flex items-center justify-end gap-1 text-[10px] sm:text-[11px] font-medium uppercase tracking-wide text-gray-400">
+                    <p className="flex items-center justify-end gap-1 text-[10px] font-medium uppercase tracking-wide text-gray-400 sm:text-[11px]">
                       <Trophy className="h-3 w-3 text-amber-400" />
                       Best
                     </p>
-                    <p className="text-sm sm:text-lg font-semibold text-gray-700">
+                    <p className="text-sm font-semibold text-gray-700 sm:text-lg">
                       {bestScore}
                     </p>
                   </div>
                   <button
                     onClick={resetGame}
-                    className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 sm:px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50"
+                    className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50 sm:px-3"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Exit</span>
@@ -320,7 +333,7 @@ export default function ComingSoon({
               </div>
 
               {/* Timer progress bar */}
-              <div className="mb-4 h-1.5 w-[calc(100%-0.5rem)] overflow-hidden rounded-full bg-gray-100">
+              <div className="mb-4 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
                 <motion.div
                   className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500"
                   animate={{ width: `${progressPct}%` }}
@@ -328,149 +341,139 @@ export default function ComingSoon({
                 />
               </div>
 
-              {/* Game Board */}
-              <div className="relative h-72 sm:h-96 md:h-[26rem] w-[calc(100%-0.5rem)] overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 shadow-inner">
-                {isPlaying ? (
-                  <>
-                    {/* Red flash overlay on bomb hit */}
-                    <AnimatePresence>
-                      {flash && (
-                        <motion.div
-                          key="flash"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: [0, 0.55, 0] }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.28, ease: "easeOut" }}
-                          className="pointer-events-none absolute inset-0 z-30 bg-red-500"
-                        />
-                      )}
-                    </AnimatePresence>
+              {isPlaying ? (
+                // ---------------- PLAY AREA ----------------
+                // Fixed height + overflow-hidden is fine here: it only needs to
+                // contain absolutely-positioned emoji targets, no growing content.
+                <div className="relative h-72 w-full overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 shadow-inner sm:h-96 md:h-[26rem]">
+                  {/* Red flash overlay on bomb hit */}
+                  <AnimatePresence>
+                    {flash && (
+                      <motion.div
+                        key="flash"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0.55, 0] }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.28, ease: "easeOut" }}
+                        className="pointer-events-none absolute inset-0 z-30 bg-red-500"
+                      />
+                    )}
+                  </AnimatePresence>
 
-                    {/* Explosion particles */}
-                    <AnimatePresence>
-                      {explosion && (
-                        <div
-                          key={explosion.key}
-                          className="pointer-events-none absolute z-20 flex h-14 w-14 items-center justify-center"
-                          style={{ top: explosion.top, left: explosion.left }}
+                  {/* Explosion particles */}
+                  <AnimatePresence>
+                    {explosion && (
+                      <div
+                        key={explosion.key}
+                        className="pointer-events-none absolute z-20 flex h-14 w-14 items-center justify-center"
+                        style={{ top: explosion.top, left: explosion.left }}
+                      >
+                        {/* Central flash */}
+                        <motion.span
+                          initial={{ scale: 0.4, opacity: 1 }}
+                          animate={{ scale: 2.2, opacity: 0 }}
+                          transition={{ duration: 0.45, ease: "easeOut" }}
+                          className="absolute text-4xl"
                         >
-                          {/* Central flash */}
-                          <motion.span
-                            initial={{ scale: 0.4, opacity: 1 }}
-                            animate={{ scale: 2.2, opacity: 0 }}
-                            transition={{ duration: 0.45, ease: "easeOut" }}
-                            className="absolute text-4xl"
-                          >
-                            💥
-                          </motion.span>
-                          {/* Flying particles */}
-                          {PARTICLE_ANGLES.map((angle, i) => {
-                            const rad = (angle * Math.PI) / 180;
-                            const dist = 55 + (i % 3) * 15;
-                            const x = Math.cos(rad) * dist;
-                            const y = Math.sin(rad) * dist;
-                            return (
-                              <motion.span
-                                key={angle}
-                                initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-                                animate={{ x, y, opacity: 0, scale: 0.3 }}
-                                transition={{ duration: 0.5, ease: "easeOut" }}
-                                className="absolute h-2 w-2 rounded-full bg-gradient-to-br from-orange-400 to-red-600"
-                              />
-                            );
-                          })}
-                        </div>
-                      )}
-                    </AnimatePresence>
+                          💥
+                        </motion.span>
+                        {/* Flying particles */}
+                        {PARTICLE_ANGLES.map((angle, i) => {
+                          const rad = (angle * Math.PI) / 180;
+                          const dist = 55 + (i % 3) * 15;
+                          const x = Math.cos(rad) * dist;
+                          const y = Math.sin(rad) * dist;
+                          return (
+                            <motion.span
+                              key={angle}
+                              initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                              animate={{ x, y, opacity: 0, scale: 0.3 }}
+                              transition={{ duration: 0.5, ease: "easeOut" }}
+                              className="absolute h-2 w-2 rounded-full bg-gradient-to-br from-orange-400 to-red-600"
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
+                  </AnimatePresence>
 
-                    {/* Popup feedback text */}
-                    <AnimatePresence>
-                      {popText && (
-                        <motion.div
-                          key={popText.key}
-                          initial={{ opacity: 0, y: 6, scale: 0.8 }}
-                          animate={{ opacity: 1, y: 0, scale: 1.15 }}
-                          exit={{ opacity: 0, y: -6 }}
-                          className={`pointer-events-none absolute left-1/2 top-10 z-30 -translate-x-1/2 text-lg sm:text-xl font-extrabold drop-shadow-sm ${
-                            popText.good ? "text-emerald-500" : "text-red-500"
-                          }`}
-                        >
-                          {popText.text}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                  {/* Popup feedback text */}
+                  <AnimatePresence>
+                    {popText && (
+                      <motion.div
+                        key={popText.key}
+                        initial={{ opacity: 0, y: 6, scale: 0.8 }}
+                        animate={{ opacity: 1, y: 0, scale: 1.15 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        className={`pointer-events-none absolute left-1/2 top-10 z-30 -translate-x-1/2 text-lg font-extrabold drop-shadow-sm sm:text-xl ${
+                          popText.good ? "text-emerald-500" : "text-red-500"
+                        }`}
+                      >
+                        {popText.text}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                    {/* Target emoji */}
-                    <AnimatePresence>
-                      {target && (
-                        <motion.button
-                          key={target.key}
-                          onClick={handleHit}
-                          initial={{ scale: 0, rotate: -20 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          exit={{ scale: 0 }}
-                          whileHover={{ scale: 1.15 }}
-                          whileTap={{ scale: 0.85 }}
-                          style={{ top: target.top, left: target.left }}
-                          className="absolute z-10 flex h-12 w-12 sm:h-16 sm:w-16 cursor-pointer items-center justify-center rounded-full bg-white text-2xl sm:text-3xl shadow-lg ring-1 ring-black/5"
-                        >
-                          {target.emoji}
-                        </motion.button>
-                      )}
-                    </AnimatePresence>
+                  {/* Target emoji */}
+                  <AnimatePresence>
+                    {target && (
+                      <motion.button
+                        key={target.key}
+                        onClick={handleHit}
+                        initial={{ scale: 0, rotate: -20 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        exit={{ scale: 0 }}
+                        whileHover={{ scale: 1.15 }}
+                        whileTap={{ scale: 0.85 }}
+                        style={{ top: target.top, left: target.left }}
+                        className="absolute z-10 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white text-2xl shadow-lg ring-1 ring-black/5 sm:h-16 sm:w-16 sm:text-3xl"
+                      >
+                        {target.emoji}
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
 
-                    <p className="absolute bottom-3 left-1/2 z-10 w-full -translate-x-1/2 px-3 text-center text-[11px] sm:text-xs text-gray-400">
-                      Tap the treats (🍕🍔🍩⭐🍎) — avoid the bombs 💣!
-                    </p>
-                  </>
-                ) : (
-                  // ---------------- RESULT VIEW ----------------
-                  <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-4 sm:p-6">
-                    <span className="text-5xl sm:text-6xl">
-                      {score >= 13 ? "🏆" : score >= 1 ? "😄" : "😅"}
-                    </span>
-                    <p className="text-lg sm:text-xl font-semibold text-gray-800">
+                  <p className="absolute bottom-3 left-1/2 z-10 w-full -translate-x-1/2 px-3 text-center text-[11px] text-gray-400 sm:text-xs">
+                    Tap the treats (🍕🍔🍩⭐🍎) — avoid the bombs 💣!
+                  </p>
+                </div>
+              ) : (
+                // ---------------- RESULT VIEW ----------------
+                // Auto height (not clipped/fixed) so the score, message, duration
+                // picker, and buttons always have room to breathe on any screen.
+                // max-h + overflow-y-auto is a safety net for very short viewports.
+                <div className="flex max-h-[70vh] w-full flex-col items-center gap-4 overflow-y-auto rounded-3xl border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 px-4 py-8 shadow-inner sm:px-6">
+                  <span className="text-5xl sm:text-6xl">
+                    {score >= 13 ? "🏆" : score >= 1 ? "😄" : "😅"}
+                  </span>
+                  <div>
+                    <p className="text-lg font-semibold text-gray-800 sm:text-xl">
                       Your Score: {score}
                     </p>
-                    <p className="max-w-xs px-2 text-sm text-gray-500">
+                    <p className="mt-2 max-w-xs text-sm text-gray-500">
                       {getFunnyResult(score)}
                     </p>
-
-                    <div className="mt-1 flex flex-wrap items-center justify-center gap-2 px-2">
-                      <span className="text-xs text-gray-400">Next round:</span>
-                      {DURATION_OPTIONS.map((secs) => (
-                        <button
-                          key={secs}
-                          onClick={() => setDuration(secs)}
-                          className={`rounded-full px-2 sm:px-3 py-1 text-xs font-medium transition ${
-                            duration === secs
-                              ? "bg-violet-600 text-white"
-                              : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                          }`}
-                        >
-                          {secs}s
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="mt-2 flex w-full flex-col gap-3 px-4 sm:w-auto sm:flex-row sm:px-0">
-                      <button
-                        onClick={startGame}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-violet-700 sm:w-auto"
-                      >
-                        <RotateCcw className="h-4 w-4" />
-                        Play Again
-                      </button>
-                      <button
-                        onClick={resetGame}
-                        className="w-full rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 sm:w-auto"
-                      >
-                        Close
-                      </button>
-                    </div>
                   </div>
-                )}
-              </div>
+
+                  <DurationPicker label="Next round:" />
+
+                  <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                    <button
+                      onClick={startGame}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-violet-700 sm:w-auto"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      Play Again
+                    </button>
+                    <button
+                      onClick={resetGame}
+                      className="w-full rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 sm:w-auto"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
