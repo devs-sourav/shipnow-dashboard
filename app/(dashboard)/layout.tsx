@@ -70,11 +70,29 @@ function SideTooltipPortal({ tooltip }: { tooltip: TooltipState }) {
   );
 }
 
+const breadcrumbMap: Record<string, string> = {
+  "/analytics": "Analytics",
+  "/calendar": "Calendar",
+  "/shipments": "Shipments",
+  "/tracking": "Tracking",
+  "/warehouse": "Warehouse",
+  "/fleets": "Fleets",
+  "/drivers": "Drivers",
+  "/invoices": "Invoices & Billing",
+  "/messages": "Messages",
+  "/notifications": "Notifications",
+  "/settings": "Settings",
+};
+
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const [greeting, setGreeting] = useState("Good Morning");
   const [tooltip, setTooltip] = useState<TooltipState>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // if (pathname === "/dashboard") return null;
+  // const pageName = breadcrumbMap[pathname];
+  // if (!pageName) return null;
 
   useEffect(() => {
     setGreeting(getGreeting());
@@ -87,11 +105,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     setMobileOpen(false);
   }, [pathname]);
 
-  // NOTE: widened from React.MouseEvent<HTMLElement> to
-  // React.SyntheticEvent<HTMLElement> because this handler is used for both
-  // onMouseEnter/onMouseLeave (MouseEvent) AND onFocus/onBlur (FocusEvent).
-  // Only `currentTarget` is used inside, so SyntheticEvent<HTMLElement> is
-  // the correct, minimal shared type for both event kinds.
   const showTooltip = useCallback(
     (e: React.SyntheticEvent<HTMLElement>, label: string) => {
       // lg breakpoint (>=1024px)-e sidebar full-width thake, tooltip lagbe na
@@ -213,7 +226,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           aria-label="John Doe, Admin"
           onMouseEnter={(e) => showTooltip(e, "John Doe · Admin")}
           onMouseLeave={hideTooltip}
-          className="mb-6 flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-gray-100 px-2 py-2 text-left transition hover:bg-gray-50 lg:justify-between"
+          className="mb-6 flex w-full cursor-pointer items-center justify-center gap-3 bg-[#F0F0F0] rounded-xl border border-gray-100 px-2 py-2 text-left transition hover:bg-violet-100 lg:justify-between"
         >
           <span className="flex items-center gap-3">
             <img
@@ -264,7 +277,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main Content */}
       <div className="flex flex-1 flex-col">
         {/* Header */}
-        <header className="px-3 pb-4 pt-4 sm:px-5">
+        <header className="px-3 pb-4 pt-4 sm:px-4">
           {/* Top row */}
           <div className="flex items-center justify-between gap-4">
             {/* Mobile: logo + page title */}
@@ -277,12 +290,40 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               />
             </div>
             <h1 className="text-[16px] font-semibold md:hidden text-gray-900">
-              Dashboard
+              {pathname === "/dashboard"
+                ? "Dashboard"
+                : breadcrumbMap[pathname]}
             </h1>
-            {/* Desktop: greeting */}
+            {/* Desktop: greeting + breadcrumb */}
             <div className="hidden md:block">
-              <p className="text-sm text-gray-500">Hello John!</p>
-              <h1 className="text-2xl font-bold text-gray-900">{greeting}</h1>
+              {pathname === "/dashboard" ? (
+                <>
+                  <p className="text-sm text-gray-500">Hello John!</p>
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {greeting}
+                  </h1>
+                </>
+              ) : (
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                    {breadcrumbMap[pathname]}
+                  </h1>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Link
+                      href="/dashboard"
+                      className="text-[#856DF3] text-[12px] hover:text-gray-700"
+                    >
+                      Dashboard
+                    </Link>
+
+                    <span className="text-gray-400">/</span>
+
+                    <span className="font-semibold text-[12px] text-[#333333">
+                      {breadcrumbMap[pathname]}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Desktop: search + add button */}
@@ -296,7 +337,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 />
               </div>
 
-              <button className="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
+              <button className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
                 <Plus size={16} />
                 <span>Add New Shipping</span>
               </button>

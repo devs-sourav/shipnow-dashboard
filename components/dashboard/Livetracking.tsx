@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { Search, Plus, Minus, Navigation2, ArrowLeftRight, MapPin, Flag } from "lucide-react";
 
 interface ShipmentLeg {
@@ -169,7 +169,17 @@ export default function LiveTracking() {
   // It's null when not dragging, so the bar/marker fall back to the real progress.
   const [dragProgress, setDragProgress] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const progressBarRef = useRef<HTMLDivElement>(null);
+
+  // NOTE (bugfix): this component renders the progress bar TWICE - once in
+  // the desktop info card (hidden sm:block) and once in the mobile info card
+  // (sm:hidden). Both stay mounted in the DOM at all times (only hidden via
+  // CSS), so a single shared `progressBarRef` would always end up pointing
+  // at whichever copy mounted last (the mobile one), even while dragging the
+  // desktop bar. That made `getBoundingClientRect()` return a 0-width rect
+  // for the visible bar, so ratio math divided by 0 and immediately snapped
+  // to 100%. Fix: don't use a ref at all - read the bar's own rect straight
+  // off `e.currentTarget` inside the pointer handlers, so each bar always
+  // measures itself correctly regardless of which copy is visible.
 
   const shipment = SHIPMENTS[selectedId] ?? SHIPMENTS[DEFAULT_SHIPMENT_ID];
   const displayProgress = dragProgress ?? shipment.progress;
@@ -245,10 +255,11 @@ export default function LiveTracking() {
     setZoom((z) => Math.max(MIN_ZOOM, Math.round((z - ZOOM_STEP) * 100) / 100));
   }
 
-  function progressFromClientX(clientX: number): number {
-    const bar = progressBarRef.current;
-    if (!bar) return displayProgress;
+  // Reads progress straight off the bar element that fired the event
+  // (e.currentTarget), instead of a shared ref. See NOTE above.
+  function progressFromClientX(clientX: number, bar: HTMLDivElement): number {
     const rect = bar.getBoundingClientRect();
+    if (rect.width === 0) return displayProgress;
     const ratio = (clientX - rect.left) / rect.width;
     return Math.max(0, Math.min(100, Math.round(ratio * 100)));
   }
@@ -256,12 +267,12 @@ export default function LiveTracking() {
   function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsDragging(true);
-    setDragProgress(progressFromClientX(e.clientX));
+    setDragProgress(progressFromClientX(e.clientX, e.currentTarget));
   }
 
   function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
     if (!isDragging) return;
-    setDragProgress(progressFromClientX(e.clientX));
+    setDragProgress(progressFromClientX(e.clientX, e.currentTarget));
   }
 
   function handlePointerUp(e: React.PointerEvent<HTMLDivElement>) {
@@ -384,12 +395,7 @@ export default function LiveTracking() {
           </div>
         </div>
 
-        {/* search bar
-            - was w-[254px] (fixed width) + right-16, which on narrow phone
-              widths pushed the suggestion list/search box right up against
-              (or past) the zoom controls.
-            - now width flexes between left-3 and right-16, capped with
-              max-w so it never grows too wide on larger screens either. */}
+
         <div className="absolute left-3 right-16 top-3  w-[93%] sm:max-w-[254px]">
           <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 shadow-sm">
             <input
@@ -481,7 +487,6 @@ export default function LiveTracking() {
 
           {/* draggable progress bar: scrub to preview, release to snap back to the real progress */}
           <div
-            ref={progressBarRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -554,7 +559,6 @@ export default function LiveTracking() {
 
           {/* draggable progress bar: scrub to preview, release to snap back to the real progress */}
           <div
-            ref={progressBarRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
