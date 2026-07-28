@@ -1,6 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -19,6 +21,8 @@ import {
   ChevronDown,
   Search,
   Plus,
+  Menu,
+  X,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -35,8 +39,74 @@ interface DashboardLayoutProps {
   children: ReactNode;
 }
 
+// ---- Time onujayi greeting ber korar function ----
+function getGreeting(): string {
+  const hour = new Date().getHours();
+
+  if (hour >= 5 && hour < 12) return "Good Morning";
+  if (hour === 12) return "Good Noon";
+  if (hour > 12 && hour < 17) return "Good Afternoon";
+  if (hour >= 17 && hour < 21) return "Good Evening";
+  if (hour >= 21 && hour < 24) return "Good Night";
+  return "Good Late Night"; // 12am - 5am
+}
+
+type TooltipState = { label: string; top: number; left: number } | null;
+
+function SideTooltipPortal({ tooltip }: { tooltip: TooltipState }) {
+  if (!tooltip) return null;
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <span
+      role="tooltip"
+      className="pointer-events-none fixed z-50 -translate-y-1/2 whitespace-nowrap rounded-lg bg-[#856DF3] px-3 py-1.5 text-xs font-medium text-white opacity-100 shadow-lg lg:hidden"
+      style={{ top: tooltip.top, left: tooltip.left }}
+    >
+      <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-[#856DF3]" />
+      {tooltip.label}
+    </span>,
+    document.body,
+  );
+}
+
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
+  const [greeting, setGreeting] = useState("Good Morning");
+  const [tooltip, setTooltip] = useState<TooltipState>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    setGreeting(getGreeting());
+    const interval = setInterval(() => setGreeting(getGreeting()), 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Route change hole mobile drawer nijer theke bondho hoye jak
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // NOTE: widened from React.MouseEvent<HTMLElement> to
+  // React.SyntheticEvent<HTMLElement> because this handler is used for both
+  // onMouseEnter/onMouseLeave (MouseEvent) AND onFocus/onBlur (FocusEvent).
+  // Only `currentTarget` is used inside, so SyntheticEvent<HTMLElement> is
+  // the correct, minimal shared type for both event kinds.
+  const showTooltip = useCallback(
+    (e: React.SyntheticEvent<HTMLElement>, label: string) => {
+      // lg breakpoint (>=1024px)-e sidebar full-width thake, tooltip lagbe na
+      if (window.innerWidth >= 1024) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      setTooltip({
+        label,
+        top: rect.top + rect.height / 2,
+        left: rect.right + 8,
+      });
+    },
+    [],
+  );
+
+  const hideTooltip = useCallback(() => setTooltip(null), []);
 
   const mainMenus = [
     { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -57,11 +127,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ];
 
   const socialLinks = [
-    { Icon: FaFacebookF, label: "Facebook" },
-    { Icon: FaTwitter, label: "Twitter" },
-    { Icon: FaInstagram, label: "Instagram" },
-    { Icon: FaYoutube, label: "Youtube" },
-    { Icon: FaLinkedinIn, label: "Linkedin" },
+    { Icon: FaFacebookF, label: "Facebook", href: "https://facebook.com" },
+    { Icon: FaTwitter, label: "Twitter", href: "https://twitter.com" },
+    { Icon: FaInstagram, label: "Instagram", href: "https://instagram.com" },
+    { Icon: FaYoutube, label: "Youtube", href: "https://youtube.com" },
+    { Icon: FaLinkedinIn, label: "Linkedin", href: "https://linkedin.com" },
   ];
 
   const renderMenuItem = (
@@ -69,12 +139,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ) => {
     const Icon = menu.icon;
     const active = pathname === menu.href;
+    const label = menu.badge ? `${menu.title} (${menu.badge})` : menu.title;
 
     return (
       <Link
         key={menu.title}
         href={menu.href}
-        className={`group flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 transition-all duration-200 ${
+        aria-label={menu.title}
+        aria-current={active ? "page" : undefined}
+        onMouseEnter={(e) => showTooltip(e, label)}
+        onMouseLeave={hideTooltip}
+        onFocus={(e) => showTooltip(e, label)}
+        onBlur={hideTooltip}
+        className={`group flex items-center justify-center gap-3 rounded-xl px-4 py-2.5 outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-violet-400 lg:justify-between ${
           active
             ? "bg-violet-100 font-semibold text-violet-700"
             : "text-gray-500 hover:bg-violet-50 hover:text-violet-700"
@@ -83,17 +160,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <span className="flex items-center gap-3">
           <Icon
             size={19}
-            className={`transition ${
+            className={`shrink-0 transition ${
               active
                 ? "text-violet-700"
                 : "text-gray-400 group-hover:text-violet-700"
             }`}
           />
-          <span className="text-[15px]">{menu.title}</span>
+          <span className="hidden text-[15px] lg:inline">{menu.title}</span>
         </span>
 
         {menu.badge ? (
-          <span className="rounded-md bg-violet-600 px-2 py-0.5 text-xs font-semibold text-white">
+          <span className="hidden rounded-md bg-violet-600 px-2 py-0.5 text-xs font-semibold text-white lg:block">
             {menu.badge}
           </span>
         ) : null}
@@ -101,66 +178,143 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     );
   };
 
+  const sidebarContent = (
+    <>
+      <div>
+        {/* Logo + mobile close button */}
+        <div className="mb-6 flex items-center justify-center lg:justify-between gap-2 px-1 lg:justify-start">
+          <div className="flex items-center gap-2">
+            <Link href={"/dashboard"} className="hidden lg:block">
+              <Image
+                src="/assets/logo/Logo3.png"
+                alt="logo"
+                width={150}
+                height={40}
+                priority
+              />
+            </Link>
+            <Link
+              href={"/dashboard"}
+              className="flex justify-center h-9 w-9 lg:hidden"
+            >
+              <Image
+                src="/assets/logo/Logo2.png"
+                alt="logo"
+                width={30}
+                height={30}
+                priority
+              />
+            </Link>
+          </div>
+        </div>
+
+        {/* User */}
+        <button
+          aria-label="John Doe, Admin"
+          onMouseEnter={(e) => showTooltip(e, "John Doe · Admin")}
+          onMouseLeave={hideTooltip}
+          className="mb-6 flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-gray-100 px-2 py-2 text-left transition hover:bg-gray-50 lg:justify-between"
+        >
+          <span className="flex items-center gap-3">
+            <img
+              src="https://i.pravatar.cc/100"
+              alt="User"
+              className="h-9 w-9 shrink-0 rounded-full object-cover"
+            />
+            <span className="hidden lg:inline">
+              <span className="block text-sm font-semibold text-gray-900">
+                John Doe
+              </span>
+              <span className="block text-xs text-gray-400">Admin</span>
+            </span>
+          </span>
+          <ChevronDown size={16} className="hidden text-gray-400 lg:block" />
+        </button>
+
+        <nav className="space-y-1">{mainMenus.map(renderMenuItem)}</nav>
+        <div className="my-4 border-t border-gray-100" />
+        <nav className="space-y-1">{utilityMenus.map(renderMenuItem)}</nav>
+      </div>
+
+      <div className="hidden lg:block">
+        <PromoBanner />
+      </div>
+    </>
+  );
+
   return (
     <div className="flex h-full bg-gray-100">
-      {/* Sidebar */}
-      <aside className=" h-auto w-[260px]  overflow-y-auto flex flex-col justify-between bg-white px-4 pb-5 pt-6">
-        {/* Logo */}
-        <div >
-          <div className="mb-6 flex items-center gap-2 px-1">
-            <Image
-              src="/assets/logo/Logo3.png"
-              alt="logo"
-              width={150}
-              height={40}
-              priority
-            />
-          </div>
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
 
-          {/* User */}
-          <button className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-gray-100 px-2 py-2 text-left transition hover:bg-gray-50">
-            <span className="flex items-center gap-3">
-              <img
-                src="https://i.pravatar.cc/100"
-                alt="User"
-                className="h-9 w-9 rounded-full object-cover"
-              />
-              <span>
-                <span className="block text-sm font-semibold text-gray-900">
-                  John Doe
-                </span>
-                <span className="block text-xs text-gray-400">Admin</span>
-              </span>
-            </span>
-            <ChevronDown size={16} className="text-gray-400" />
-          </button>
-
-          {/* Main Menu */}
-          <nav className="space-y-1">{mainMenus.map(renderMenuItem)}</nav>
-
-          {/* Divider */}
-          <div className="my-4 border-t border-gray-100" />
-
-          {/* Utility Menu */}
-          <nav className="space-y-1">{utilityMenus.map(renderMenuItem)}</nav>
-
-          {/* Spacer pushes upgrade card down like reference */}
-          <div className="flex-1" />
-        </div>{" "}
-        <PromoBanner />
+      {/* Sidebar (collapsed icon-rail on md, full drawer on mobile via translate) */}
+      <aside
+        className={`fixed sm:block inset-y-0 left-0 z-40 flex h-auto lg:w-64 flex-col justify-between overflow-y-auto overflow-x-hidden bg-white px-4 pb-5 pt-6 transition-transform duration-300 md:sticky md:top-0 md:w-20 md:translate-x-0 md:px-2 lg:w-[260px] lg:px-4 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {sidebarContent}
       </aside>
 
       {/* Main Content */}
       <div className="flex flex-1 flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between px-8 pb-4 pt-6">
-          <div>
-            <p className="text-sm text-gray-500">Hello John!</p>
-            <h1 className="text-2xl font-bold text-gray-900">Good Morning</h1>
+        <header className="px-3 pb-4 pt-4 sm:px-5">
+          {/* Top row */}
+          <div className="flex items-center justify-between gap-4">
+            {/* Mobile: logo + page title */}
+            <div className="flex items-center gap-2 md:hidden">
+              <Image
+                src="/assets/logo/Logo2.png"
+                alt="logo"
+                width={28}
+                height={28}
+              />
+            </div>
+            <h1 className="text-[16px] font-semibold md:hidden text-gray-900">
+              Dashboard
+            </h1>
+            {/* Desktop: greeting */}
+            <div className="hidden md:block">
+              <p className="text-sm text-gray-500">Hello John!</p>
+              <h1 className="text-2xl font-bold text-gray-900">{greeting}</h1>
+            </div>
+
+            {/* Desktop: search + add button */}
+            <div className="hidden items-center gap-4 md:flex">
+              <div className="flex w-72 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
+                <Search size={18} className="text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search anything"
+                  className="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-400"
+                />
+              </div>
+
+              <button className="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
+                <Plus size={16} />
+                <span>Add New Shipping</span>
+              </button>
+            </div>
+
+            {/* Mobile: hamburger */}
+            <button
+              aria-label="Open menu"
+              onClick={() => setMobileOpen(true)}
+              className="rounded-xl bg-white p-2.5 text-gray-500 shadow-sm cursor-pointer md:hidden"
+            >
+              <Menu size={20} />
+            </button>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex w-72 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
+          {/* Mobile: search row + add button */}
+          <div className="mt-4 flex items-center gap-3 md:hidden">
+            <div className="flex flex-1 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
               <Search size={18} className="text-gray-400" />
               <input
                 type="text"
@@ -168,19 +322,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 className="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-400"
               />
             </div>
-
-            <button className="flex items-center gap-2 rounded-xl bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800">
-              <Plus size={16} />
-              Add New Shipping
+            <button
+              aria-label="Add New Shipping"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white transition hover:bg-gray-800"
+            >
+              <Plus size={18} />
             </button>
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 px-8 pb-4">{children}</main>
+        <main className="flex-1 px-3 pb-4 sm:px-4">{children}</main>
 
-        <footer className="flex items-center justify-between px-8 py-2 text-sm text-gray-500">
-          <div className="flex items-center gap-8">
+        <footer className="flex flex-wrap items-center justify-between gap-4 px-3 py-2 text-sm text-gray-500 sm:px-5">
+          <div className="flex flex-wrap items-center gap-8">
             <p className="text-[#111111]">Copyright © 2025 Peterdraw</p>
             <a href="#" className="transition hover:text-gray-700">
               Privacy Policy
@@ -194,10 +348,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            {socialLinks.map(({ Icon, label }) => (
+            {socialLinks.map(({ Icon, label, href }) => (
               <a
                 key={label}
-                href="#"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition hover:border-violet-300 hover:text-violet-700"
               >
@@ -207,6 +363,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </footer>
       </div>
+
+      <SideTooltipPortal tooltip={tooltip} />
     </div>
   );
 }
