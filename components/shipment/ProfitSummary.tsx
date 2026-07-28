@@ -54,6 +54,12 @@ const RANGE_OPTIONS: RangeOption[] = [
   { label: "Last 8 Months", months: 8 },
 ];
 
+// Tooltip-er approx width/height — clamp calculation-e use hobe.
+// (Actual DOM width measure kora zeto ekta ref diye, kintu eta simple o predictable.)
+const TOOLTIP_WIDTH = 104;
+const TOOLTIP_HEIGHT = 56;
+const EDGE_PADDING = 4; // container-er edge theke minimum gap
+
 export default function ProfitSummary() {
   // selectedRange = dropdown theke kon option active
   const [selectedRange, setSelectedRange] = useState<RangeOption>(
@@ -100,6 +106,8 @@ export default function ProfitSummary() {
 
   // activeIndex change hole (ba mount hole, ba window resize hole) DOM theke
   // shothik bar-ta khuje niye tar upore tooltip position calculate kori.
+  // Tooltip-er left/top ekhon container-er bounds-er moddhei clamp kora hocche,
+  // tai mobile-e (choto width) tooltip r bahire chole jabe na.
   useEffect(() => {
     const positionTooltip = () => {
       const wrap = chartWrapRef.current;
@@ -117,8 +125,17 @@ export default function ProfitSummary() {
 
       const wrapRect = wrap.getBoundingClientRect();
       const rectBox = activeRect.getBoundingClientRect();
-      const left = rectBox.left + rectBox.width / 2 - wrapRect.left;
-      const top = rectBox.top - wrapRect.top;
+
+      let left = rectBox.left + rectBox.width / 2 - wrapRect.left;
+      let top = rectBox.top - wrapRect.top;
+
+      // Horizontally clamp: tooltip half-width + padding-er baire jete debo na
+      const minLeft = TOOLTIP_WIDTH / 2 + EDGE_PADDING;
+      const maxLeft = wrapRect.width - TOOLTIP_WIDTH / 2 - EDGE_PADDING;
+      left = Math.min(Math.max(left, minLeft), maxLeft);
+
+      // Vertically clamp: upore chart wrap-er baire (negative top) jete debo na
+      top = Math.max(top, TOOLTIP_HEIGHT + EDGE_PADDING);
 
       setHoverInfo({ index: activeIndex, left, top });
     };
@@ -286,7 +303,7 @@ export default function ProfitSummary() {
         {hoverData && hoverInfo && (
           <div
             className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-t-md rounded-r-md bg-[#F0F0F0] px-2.5 py-1.5 shadow-xl border border-[#F0F0F0]"
-            style={{ left: hoverInfo.left + 100, top: hoverInfo.top - 13 }}
+            style={{ left: hoverInfo.left, top: hoverInfo.top - 13, width: TOOLTIP_WIDTH }}
           >
             <div className="space-y-0.5">
               <div className="flex items-center justify-between gap-2">

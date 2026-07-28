@@ -333,21 +333,31 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         <main className="flex-1 px-3 pb-4 sm:px-4">{children}</main>
 
-        <footer className="flex flex-wrap items-center justify-between gap-4 px-3 py-2 text-sm text-gray-500 sm:px-5">
-          <div className="flex flex-wrap items-center gap-8">
-            <p className="text-[#111111]">Copyright © 2025 Peterdraw</p>
-            <a href="#" className="transition hover:text-gray-700">
-              Privacy Policy
-            </a>
-            <a href="#" className="transition hover:text-gray-700">
-              Term and conditions
-            </a>
-            <a href="#" className="transition hover:text-gray-700">
-              Contact
-            </a>
+        <footer className="flex flex-col items-center justify-center gap-5 border-t border-gray-200 px-4 py-4 text-sm md:flex-row md:justify-between md:px-6">
+          {/* Left Side */}
+          <div className="flex flex-col items-center gap-3 md:items-start">
+            <p className="text-center lg:hidden  text-[#111111]">
+              Copyright © 2025 Peterdraw
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-6 gap-y-2 text-gray-500">
+              <p className="text-center lg:block hidden text-[#111111]">
+                Copyright © 2025 Peterdraw
+              </p>
+              <a href="#" className="transition hover:text-gray-700">
+                Privacy Policy
+              </a>
+              <a href="#" className="transition hover:text-gray-700">
+                Terms & Conditions
+              </a>
+              <a href="#" className="transition hover:text-gray-700">
+                Contact
+              </a>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Right Side */}
+          <div className="flex items-center justify-center gap-3">
             {socialLinks.map(({ Icon, label, href }) => (
               <a
                 key={label}
@@ -355,9 +365,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition hover:border-violet-300 hover:text-violet-700"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-all hover:border-violet-300 hover:text-violet-700"
               >
-                <Icon size={14} />
+                <Icon size={16} />
               </a>
             ))}
           </div>

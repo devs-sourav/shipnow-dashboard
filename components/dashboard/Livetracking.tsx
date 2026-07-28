@@ -271,12 +271,19 @@ export default function LiveTracking() {
   }
 
   return (
-    <div className="w-full  mx-auto rounded-2xl  bg-[#F4F3F1] ">
-      {/* Map area */}
-      <div className="relative h-[242px] w-full overflow-hidden rounded-xl bg-[#f4f3f1]">
-        {/* zoomable map content: grid + route + marker scale together, chrome (search/zoom) stays fixed */}
+    <div className="w-full relative mx-auto rounded-2xl bg-[#F4F3F1]">
+      {/* Map area
+          - was a hard-coded h-[242px], which stayed the same pixel height
+            even when the card's width shrank on mobile, making the map look
+            disproportionately tall/short depending on screen size.
+          - now sized with aspect-ratio + min/max clamps so it scales with
+            the container width and still looks right on narrow phones. */}
+      <div className="relative w-full h-[220px] sm:h-[420px] overflow-hidden rounded-xl bg-[#f4f3f1]">
+        {/* zoomable map content: grid + route + marker scale together, chrome (search/zoom) stays fixed
+            - mobile: full inset-0 (no card overlapping, so no bottom offset needed)
+            - desktop (sm+): bottom offset reserved so the route doesn't sit under the info card */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 sm:bottom-[145px]"
           style={{
             transform: `scale(${zoom})`,
             transformOrigin: "center center",
@@ -377,8 +384,13 @@ export default function LiveTracking() {
           </div>
         </div>
 
-        {/* search bar */}
-        <div className="absolute w-[254px] left-3 right-16 top-3">
+        {/* search bar
+            - was w-[254px] (fixed width) + right-16, which on narrow phone
+              widths pushed the suggestion list/search box right up against
+              (or past) the zoom controls.
+            - now width flexes between left-3 and right-16, capped with
+              max-w so it never grows too wide on larger screens either. */}
+        <div className="absolute left-3 right-16 top-3 max-w-[254px]">
           <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 shadow-sm">
             <input
               type="text"
@@ -438,9 +450,10 @@ export default function LiveTracking() {
         </div>
       </div>
 
-      {/* info card */}
-      <div className="bg-[#f4f3f1] px-3 pb-3 rounded-b-2xl mt-0">
-        <div className=" rounded-xl bg-white p-3  shadow-sm">
+      {/* info card - desktop (unchanged, hidden entirely on mobile so it
+          doesn't take up any space or overlap the map) */}
+      <div className="hidden sm:block bg-[#f4f3f1] absolute left-0 bottom-0 sm:w-[425px] lg:w-full px-3 pb-3 rounded-b-2xl mt-0 ">
+        <div className="rounded-xl bg-white p-3 shadow-sm">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-base font-semibold text-neutral-900">
@@ -510,6 +523,80 @@ export default function LiveTracking() {
           </div>
         </div>
       </div>
+
+      {/* info card - mobile (normal flow, sits below the map, no overlap) */}
+      <div className="bg-white sm:w-[425px] sm:hidden lg:w-full rounded-b-2xl">
+        <div className="rounded-xl bg-white px-4 pb-4 pt-3 block sm:hidden">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-base font-semibold text-neutral-900">
+                #{shipment.id}
+              </p>
+              <div className="mt-1.5 flex items-center gap-1.5">
+                <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] sm:text-xs font-medium text-violet-700">
+                  {shipment.status}
+                </span>
+                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] sm:text-xs  font-medium text-neutral-600">
+                  {shipment.schedule}
+                </span>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-neutral-400">Courier:</p>
+              <p className="text-sm font-semibold text-neutral-900">
+                {shipment.courier}
+              </p>
+              <p className="text-xs text-neutral-400">
+                {shipment.courierService}
+              </p>
+            </div>
+          </div>
+
+          {/* draggable progress bar: scrub to preview, release to snap back to the real progress */}
+          <div
+            ref={progressBarRef}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            className="relative mt-5 flex h-5 items-center cursor-pointer touch-none select-none"
+          >
+            <div className="h-1 w-full rounded-full bg-neutral-100">
+              <div
+                className={`h-1 rounded-full bg-violet-500 ${isDragging ? "" : "transition-[width] duration-300 ease-out"}`}
+                style={{ width: `${displayProgress}%` }}
+              />
+            </div>
+            <div className="absolute left-0 h-3.5 w-3.5 -translate-x-1/2 rounded-full border-2 border-violet-500 bg-white" />
+            <div
+              className={`absolute flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full bg-violet-500 text-white ${
+                isDragging ? "" : "transition-[left] duration-300 ease-out"
+              }`}
+              style={{ left: `${displayProgress}%` }}
+            >
+              <ArrowLeftRight size={12} />
+            </div>
+            <div className="absolute right-0 h-3.5 w-3.5 translate-x-1/2 rounded-full border-2 border-neutral-200 bg-white" />
+          </div>
+
+          <div className="mt-3 flex items-start justify-between">
+            <div>
+              <p className="text-sm font-medium text-neutral-900">
+                {shipment.origin.city}
+              </p>
+              <p className="text-xs text-neutral-400">{shipment.origin.date}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-medium text-neutral-900">
+                {shipment.destination.city}
+              </p>
+              <p className="text-xs text-neutral-400">
+                {shipment.destination.date}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
