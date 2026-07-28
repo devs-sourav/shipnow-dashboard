@@ -102,9 +102,9 @@ export default function RecentActivity() {
   const visibleActivity = activity.filter((a) => !dismissedActivity.has(a.id));
 
   return (
-    <div className="rounded-2xl  bg-white p-5 shadow-sm">
+    <div className="rounded-2xl block h-full    bg-white p-4 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-base font-semibold text-gray-900">
           Recent Activity
         </h2>
         <div className="relative" ref={activityMenuRef}>
@@ -143,7 +143,7 @@ export default function RecentActivity() {
         </div>
       </div>
 
-      <ul className="space-y-3">
+      <ul className="space-y-3 pb-4 md:pb-0">
         {visibleActivity.map((a, i) => (
           <li key={a.id} className="flex gap-3 relative">
             <div className="absolute left-4 top-[35px] w-0.5 h-[60%] bg-[#E0E0E0]"></div>

@@ -119,9 +119,16 @@ export default function DashboardPage() {
       <div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:hidden">
           <ShipmentAlerts />
+          <div className="hidden md:block h-[443px" >
+
           <RecentActivity  />
+          </div>
         </div>
         <ShipmentDashboard />
+        <div className="mt-4  md:hidden">
+          <RecentActivity />
+        </div>
+        
       </div>
     </div>
   );

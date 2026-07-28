@@ -280,7 +280,7 @@ export default function ShipmentDashboard() {
         {/* Recent Shipments */}
         <div className="rounded-2xl col-span-12 lg:col-span-9 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-gray-900">
               Recent Shipments
             </h2>
             <div className="flex flex-1 items-center justify-end gap-2">
@@ -465,9 +465,9 @@ export default function ShipmentDashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="rounded-2xl col-span-3 bg-white p-5 shadow-sm hidden lg:block">
+        <div className="rounded-2xl col-span-3 bg-white p-5  shadow-sm hidden lg:block">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-gray-900">
               Recent Activity
             </h2>
             <div className="relative" ref={activityMenuRef}>

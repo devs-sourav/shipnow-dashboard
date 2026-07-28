@@ -182,7 +182,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <>
       <div>
         {/* Logo + mobile close button */}
-        <div className="mb-6 flex items-center justify-center lg:justify-between gap-2 px-1 lg:justify-start">
+        <div className="mb-6 flex items-center justify-between gap-2 px-1 ">
           <div className="flex items-center gap-2">
             <Link href={"/dashboard"} className="hidden lg:block">
               <Image
@@ -236,7 +236,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <nav className="space-y-1">{utilityMenus.map(renderMenuItem)}</nav>
       </div>
 
-      <div className="hidden lg:block">
+      <div className="hidden lg:block !mt-auto">
         <PromoBanner />
       </div>
     </>
@@ -254,7 +254,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Sidebar (collapsed icon-rail on md, full drawer on mobile via translate) */}
       <aside
-        className={`fixed sm:block inset-y-0 left-0 z-40 flex h-auto lg:w-64 flex-col justify-between overflow-y-auto overflow-x-hidden bg-white px-4 pb-5 pt-6 transition-transform duration-300 md:sticky md:top-0 md:w-20 md:translate-x-0 md:px-2 lg:w-[260px] lg:px-4 ${
+        className={`fixed sm:block h-full left-0 z-40 flex  lg:w-64 flex-col justify-between overflow-y-auto overflow-x-hidden bg-white px-4 pb-5 pt-6 transition-transform duration-300 md:sticky md:top-0 md:w-20 md:translate-x-0 md:px-2  lg:px-4 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -333,7 +333,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         <main className="flex-1 px-3 pb-4 sm:px-4">{children}</main>
 
-        <footer className="flex flex-col items-center justify-center gap-5 border-t border-gray-200 px-4 py-4 text-sm md:flex-row md:justify-between md:px-6">
+        <footer className="flex flex-col items-center justify-center gap-5 px-4 pb-2 text-sm md:flex-row md:justify-between md:px-6">
           {/* Left Side */}
           <div className="flex flex-col items-center gap-3 md:items-start">
             <p className="text-center lg:hidden  text-[#111111]">

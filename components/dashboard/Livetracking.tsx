@@ -390,7 +390,7 @@ export default function LiveTracking() {
               (or past) the zoom controls.
             - now width flexes between left-3 and right-16, capped with
               max-w so it never grows too wide on larger screens either. */}
-        <div className="absolute left-3 right-16 top-3 max-w-[254px]">
+        <div className="absolute left-3 right-16 top-3  w-[93%] sm:max-w-[254px]">
           <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 shadow-sm">
             <input
               type="text"
@@ -429,7 +429,7 @@ export default function LiveTracking() {
         </div>
 
         {/* zoom controls */}
-        <div className="absolute right-3 top-3 flex flex-col overflow-hidden rounded-lg bg-white shadow-sm">
+        <div className="absolute right-3 top-[60%] sm:top-3 flex flex-col overflow-hidden rounded-lg bg-white shadow-sm">
           <button
             type="button"
             onClick={handleZoomIn}
