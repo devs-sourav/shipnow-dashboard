@@ -166,7 +166,7 @@ const parseDate = (value: string) => {
   return Number.isNaN(t) ? 0 : t;
 };
 
-export default function ShipmentDashboard() {
+export default function ShipmentDashboardPage() {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [selectAll, setSelectAll] = useState(false);
   const [query, setQuery] = useState("");

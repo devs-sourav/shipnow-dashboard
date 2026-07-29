@@ -164,20 +164,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         onMouseLeave={hideTooltip}
         onFocus={(e) => showTooltip(e, label)}
         onBlur={hideTooltip}
-        className={`group flex items-center justify-center gap-3 rounded-xl px-4 py-2.5 outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-violet-400 lg:justify-between ${
-          active
+        className={`group flex items-center justify-center gap-3 rounded-xl px-4 py-2.5 outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-violet-400 lg:justify-between ${active
             ? "bg-violet-100 font-semibold text-violet-700"
             : "text-gray-500 hover:bg-violet-50 hover:text-violet-700"
-        }`}
+          }`}
       >
         <span className="flex items-center gap-3">
           <Icon
             size={19}
-            className={`shrink-0 transition ${
-              active
+            className={`shrink-0 transition ${active
                 ? "text-violet-700"
                 : "text-gray-400 group-hover:text-violet-700"
-            }`}
+              }`}
           />
           <span className="hidden text-[15px] lg:inline">{menu.title}</span>
         </span>
@@ -267,153 +265,163 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Sidebar (collapsed icon-rail on md, full drawer on mobile via translate) */}
       <aside
-        className={`fixed sm:block h-full left-0 z-40 flex  lg:w-64 flex-col justify-between overflow-y-auto overflow-x-hidden bg-white px-4 pb-5 pt-6 transition-transform duration-300 md:sticky md:top-0 md:w-20 md:translate-x-0 md:px-2  lg:px-4 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed sm:block h-full left-0 z-40 flex  lg:w-[15%] flex-col justify-between overflow-y-auto overflow-x-hidden bg-white px-4 pb-5 pt-6 transition-transform duration-300 md:sticky md:top-0 md:w-20 md:translate-x-0 md:px-2  lg:px-4 ${mobileOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {sidebarContent}
       </aside>
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col">
-        {/* Header */}
-        <header className="px-3 pb-4 pt-4 sm:px-4">
-          {/* Top row */}
-          <div className="flex items-center justify-between gap-4">
-            {/* Mobile: logo + page title */}
-            <div className="flex items-center gap-2 md:hidden">
-              <Image
-                src="/assets/logo/Logo2.png"
-                alt="logo"
-                width={28}
-                height={28}
-              />
-            </div>
-            <h1 className="text-[16px] font-semibold md:hidden text-gray-900">
-              {pathname === "/dashboard"
-                ? "Dashboard"
-                : breadcrumbMap[pathname]}
-            </h1>
-            {/* Desktop: greeting + breadcrumb */}
-            <div className="hidden md:block">
-              {pathname === "/dashboard" ? (
-                <>
-                  <p className="text-sm text-gray-500">Hello John!</p>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    {greeting}
-                  </h1>
-                </>
-              ) : (
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                    {breadcrumbMap[pathname]}
-                  </h1>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Link
-                      href="/dashboard"
-                      className="text-[#856DF3] text-[12px] hover:text-gray-700"
-                    >
-                      Dashboard
-                    </Link>
-
-                    <span className="text-gray-400">/</span>
-
-                    <span className="font-semibold text-[12px] text-[#333333">
-                      {breadcrumbMap[pathname]}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Desktop: search + add button */}
-            <div className="hidden items-center gap-4 md:flex">
-              <div className="flex w-72 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
-                <Search size={18} className="text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search anything"
-                  className="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-400"
+      <div className="w-full md:w-[92%] lg:w-[85%]">
+        <div className="flex flex-1 flex-col">
+          {/* Header */}
+          <header className="px-3 pb-4 pt-4 sm:px-4">
+            {/* Top row */}
+            <div className="flex items-center justify-between gap-4">
+              {/* Mobile: logo + page title */}
+              <div className="flex items-center gap-2 md:hidden">
+                <Image
+                  src="/assets/logo/Logo2.png"
+                  alt="logo"
+                  width={28}
+                  height={28}
                 />
               </div>
+              <h1 className="text-[16px] font-semibold md:hidden text-gray-900">
+                {pathname === "/dashboard"
+                  ? "Dashboard"
+                  : breadcrumbMap[pathname]}
+              </h1>
+              {/* Desktop: greeting + breadcrumb */}
+              <div className="hidden md:block">
+                {pathname === "/dashboard" ? (
+                  <>
+                    <p className="text-sm text-gray-500">Hello John!</p>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      {greeting}
+                    </h1>
+                  </>
+                ) : (
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                      {breadcrumbMap[pathname]}
+                    </h1>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Link
+                        href="/dashboard"
+                        className="text-[#856DF3] text-[12px] hover:text-gray-700"
+                      >
+                        Dashboard
+                      </Link>
 
-              <button className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
-                <Plus size={16} />
-                <span>Add New Shipping</span>
+                      <span className="text-gray-400">/</span>
+
+                      <span className="font-semibold text-[12px] text-[#333333">
+                        {breadcrumbMap[pathname]}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop: search + add button */}
+
+              <div className="hidden items-center gap-4 md:flex">
+                {pathname === "/dashboard" && (
+                  <div className="flex w-72 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
+                    <Search size={18} className="text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search anything"
+                      className="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-400"
+                    />
+                  </div>
+                )}
+
+                <button className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
+                  <Plus size={16} />
+                  <span>Add New Shipping</span>
+                </button>
+              </div>
+
+              {/* Mobile: hamburger */}
+              <button
+                aria-label="Open menu"
+                onClick={() => setMobileOpen(true)}
+                className="rounded-xl bg-white p-2.5 text-gray-500 shadow-sm cursor-pointer md:hidden"
+              >
+                <Menu size={20} />
               </button>
             </div>
 
-            {/* Mobile: hamburger */}
-            <button
-              aria-label="Open menu"
-              onClick={() => setMobileOpen(true)}
-              className="rounded-xl bg-white p-2.5 text-gray-500 shadow-sm cursor-pointer md:hidden"
-            >
-              <Menu size={20} />
-            </button>
-          </div>
+            {/* Mobile: search row + add button */}
+            {pathname === "/dashboard" && (
+              <div className="mt-4 flex items-center gap-3 md:hidden w-full">
+                <div className="flex items-center gap-3 md:hidden w-full">
 
-          {/* Mobile: search row + add button */}
-          <div className="mt-4 flex items-center gap-3 md:hidden">
-            <div className="flex flex-1 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
-              <Search size={18} className="text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search anything"
-                className="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-400"
-              />
-            </div>
-            <button
-              aria-label="Add New Shipping"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white transition hover:bg-gray-800"
-            >
-              <Plus size={18} />
-            </button>
-          </div>
-        </header>
+                  <div className="flex w-full items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
+                    <Search size={18} className="text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search anything"
+                      className="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-400"
+                    />
+                  </div>
 
-        <main className="flex-1 px-3 pb-4 sm:px-4">{children}</main>
 
-        <footer className="flex flex-col items-center justify-center gap-5 px-4 pb-2 text-sm md:flex-row md:justify-between md:px-6">
-          {/* Left Side */}
-          <div className="flex flex-col items-center gap-3 md:items-start">
-            <p className="text-center lg:hidden  text-[#111111]">
-              Copyright © 2025 Peterdraw
-            </p>
+                  <button className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
+                    <Plus size={18} />
+                    <span className="hidden">Add New Shipping</span>
+                  </button>
+                </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-6 gap-y-2 text-gray-500">
-              <p className="text-center lg:block hidden text-[#111111]">
+              </div>)}
+          </header>
+
+          <main className="flex-1 px-3 pb-4 sm:px-4">{children}</main>
+
+          <footer className="flex flex-col items-center justify-center gap-5 px-4 pb-2 text-sm md:flex-row md:justify-between md:px-6">
+            {/* Left Side */}
+            <div className="flex flex-col items-center gap-3 md:items-start">
+              <p className="text-center lg:hidden  text-[#111111]">
                 Copyright © 2025 Peterdraw
               </p>
-              <a href="#" className="transition hover:text-gray-700">
-                Privacy Policy
-              </a>
-              <a href="#" className="transition hover:text-gray-700">
-                Terms & Conditions
-              </a>
-              <a href="#" className="transition hover:text-gray-700">
-                Contact
-              </a>
-            </div>
-          </div>
 
-          {/* Right Side */}
-          <div className="flex items-center justify-center gap-3">
-            {socialLinks.map(({ Icon, label, href }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-all hover:border-violet-300 hover:text-violet-700"
-              >
-                <Icon size={16} />
-              </a>
-            ))}
-          </div>
-        </footer>
+              <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-6 gap-y-2 text-gray-500">
+                <p className="text-center lg:block hidden text-[#111111]">
+                  Copyright © 2025 Peterdraw
+                </p>
+                <a href="#" className="transition hover:text-gray-700">
+                  Privacy Policy
+                </a>
+                <a href="#" className="transition hover:text-gray-700">
+                  Terms & Conditions
+                </a>
+                <a href="#" className="transition hover:text-gray-700">
+                  Contact
+                </a>
+              </div>
+            </div>
+
+            {/* Right Side */}
+            <div className="flex items-center justify-center gap-3">
+              {socialLinks.map(({ Icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-all hover:border-violet-300 hover:text-violet-700"
+                >
+                  <Icon size={16} />
+                </a>
+              ))}
+            </div>
+          </footer>
+        </div>
       </div>
+
 
       <SideTooltipPortal tooltip={tooltip} />
     </div>
