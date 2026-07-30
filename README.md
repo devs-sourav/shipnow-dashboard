@@ -100,14 +100,30 @@ Open [**http://localhost:3000**](http://localhost:3000) in your browser.
 
 # Project Structure
 
-```
-app/
-components/
-data/
-types/
-hooks/
-lib/
-public/
+# Project Structure
+
+```text
+.
+├── app
+│   ├── (auth)
+│   ├── (dashboard)
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── globals.css
+│   └── not-found.tsx
+├── components
+├── context
+├── data
+├── hooks
+├── lib
+├── providers
+├── public
+├── src
+├── styles
+├── types
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
 ---
