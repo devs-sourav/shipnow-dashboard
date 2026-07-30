@@ -23,6 +23,7 @@ import {
   Plus,
   Menu,
   X,
+  ArrowLeft,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -82,6 +83,7 @@ const breadcrumbMap: Record<string, string> = {
   "/messages": "Messages",
   "/notifications": "Notifications",
   "/settings": "Settings",
+  "/create-shipment": "Create New Shipment",
 };
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -120,6 +122,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 
   const hideTooltip = useCallback(() => setTooltip(null), []);
+
+  // create-shipment page theke back button click korle /shipments e jabe
+  const backHref = pathname === "/create-shipment" ? "/shipments" : "/dashboard";
 
   const mainMenus = [
     { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -165,16 +170,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         onFocus={(e) => showTooltip(e, label)}
         onBlur={hideTooltip}
         className={`group flex items-center justify-center gap-3 rounded-xl px-4 py-2.5 outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-violet-400 lg:justify-between ${active
-            ? "bg-violet-100 font-semibold text-violet-700"
-            : "text-gray-500 hover:bg-violet-50 hover:text-violet-700"
+          ? "bg-violet-100 font-semibold text-violet-700"
+          : "text-gray-500 hover:bg-violet-50 hover:text-violet-700"
           }`}
       >
         <span className="flex items-center gap-3">
           <Icon
             size={19}
             className={`shrink-0 transition ${active
-                ? "text-violet-700"
-                : "text-gray-400 group-hover:text-violet-700"
+              ? "text-violet-700"
+              : "text-gray-400 group-hover:text-violet-700"
               }`}
           />
           <span className="hidden text-[15px] lg:inline">{menu.title}</span>
@@ -275,7 +280,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="w-full md:w-[92%] lg:w-[85%]">
         <div className="flex flex-1 flex-col">
           {/* Header */}
-          <header className="px-3 pb-4 pt-4 sm:px-4">
+          <header
+            className={`px-3 pb-4 pt-4 sm:px-4 ${pathname === "/warehouse" ? "sm:hidden" : ""
+              }`}
+          >
             {/* Top row */}
             <div className="flex items-center justify-between gap-4">
               {/* Mobile: logo + page title */}
@@ -287,7 +295,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   height={28}
                 />
               </div>
-              <h1 className="text-[16px] font-semibold md:hidden text-gray-900">
+              <h1 className="flex items-center gap-2 text-[16px] font-semibold md:hidden text-gray-900">
+                {pathname === "/create-shipment" && (
+                  <Link
+                    href={backHref}
+                    aria-label="Back to Shipments"
+                    className="text-gray-700"
+                  >
+                    <ArrowLeft size={18} />
+                  </Link>
+                )}
                 {pathname === "/dashboard"
                   ? "Dashboard"
                   : breadcrumbMap[pathname]}
@@ -303,7 +320,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   </>
                 ) : (
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                    <h1 className="mb-1 flex items-center gap-2 text-2xl font-bold text-gray-900">
+                      {pathname === "/create-shipment" && (
+                        <Link
+                          href={backHref}
+                          aria-label="Back to Shipments"
+                          className="text-gray-700 transition hover:text-violet-700"
+                        >
+                          <ArrowLeft size={22} />
+                        </Link>
+                      )}
                       {breadcrumbMap[pathname]}
                     </h1>
                     <div className="flex items-center gap-2 text-sm">
@@ -314,9 +340,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         Dashboard
                       </Link>
 
+                      {pathname === "/create-shipment" && (
+                        <>
+                          <span className="text-gray-400">/</span>
+                          <Link
+                            href="/shipments"
+                            className="text-[#856DF3] text-[12px] hover:text-gray-700"
+                          >
+                            Shipments
+                          </Link>
+                        </>
+                      )}
+
                       <span className="text-gray-400">/</span>
 
-                      <span className="font-semibold text-[12px] text-[#333333">
+                      <span className="font-semibold text-[12px] text-[#333333]">
                         {breadcrumbMap[pathname]}
                       </span>
                     </div>
@@ -338,10 +376,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   </div>
                 )}
 
-                <button className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
+                <Link href={"/create-shipment"} className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-700">
                   <Plus size={16} />
                   <span>Add New Shipping</span>
-                </button>
+                </Link>
               </div>
 
               {/* Mobile: hamburger */}
@@ -377,8 +415,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
               </div>)}
           </header>
+          <section>
+            <main className="flex-1 px-3 pb-4 sm:px-4">{children}</main>
+          </section>
 
-          <main className="flex-1 px-3 pb-4 sm:px-4">{children}</main>
 
           <footer className="flex flex-col items-center justify-center gap-5 px-4 pb-2 text-sm md:flex-row md:justify-between md:px-6">
             {/* Left Side */}

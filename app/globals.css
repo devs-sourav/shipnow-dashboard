@@ -56,3 +56,9 @@ body {
 button{
   cursor: pointer;
 }
+select{
+  cursor: pointer;
+}
+option{
+  cursor: pointer;
+}

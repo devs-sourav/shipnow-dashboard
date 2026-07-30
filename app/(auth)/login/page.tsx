@@ -4,7 +4,8 @@ import Container from "@/components/layout/Container";
 
 export default function LoginPage() {
   return (
-    <main className="h-[1024px]  w-full md:w-[1440px] mx-auto">
+    <main className="h-[1024px]  w-full md:w-full mx-auto">
+    {/* <main className="h-[1024px]  w-full md:w-[1440px] mx-auto"> */}
       {/* <Container> */}
       <div className="grid grid-cols-1 md:grid-cols-2  h-full">
         {/* LEFT */}
