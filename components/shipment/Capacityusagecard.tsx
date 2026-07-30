@@ -23,7 +23,7 @@ export default function CapacityUsageCard({ mode }: Props) {
   ];
 
   return (
-    <div className="rounded-3xl bg-[#1C1C1E] p-6">
+    <div className="rounded-2xl bg-[#1C1C1E] p-6 h-73.25">
       <div className="flex items-center justify-between">
         <h3 className="text-[16px] font-medium text-white">
           Capacity Usage
@@ -34,7 +34,7 @@ export default function CapacityUsageCard({ mode }: Props) {
         </button>
       </div>
 
-      <div className="relative mx-auto mt-4 h-[150px] w-[150px]">
+      <div className="relative mx-auto mt-4 h-[160px] w-[160px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart key={mode}>
             <Pie
@@ -45,7 +45,7 @@ export default function CapacityUsageCard({ mode }: Props) {
               cy="50%"
               startAngle={90}
               endAngle={-270}
-              innerRadius="76%"
+              innerRadius="78%"
               outerRadius="100%"
             //   cornerRadius={6}
               stroke="none"
@@ -63,7 +63,7 @@ export default function CapacityUsageCard({ mode }: Props) {
         {/* Centered "Total Usage" label, overlaid on top of the donut hole */}
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
           <p className="text-[12px] text-gray-400">Total Usage</p>
-          <p className="text-[26px] font-bold text-white">
+          <p className="text-[20px] font-bold text-white">
             {usagePercent % 1 === 0 ? usagePercent.toFixed(0) : usagePercent.toFixed(1)}%
           </p>
         </div>

@@ -31,7 +31,7 @@ export default function PackageStatusCard({ mode }: Props) {
   );
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-4 h-[350px]">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:h-73.25 overflow-hidden lg:h-87.5">
       <div className="flex items-center justify-between">
         <h3 className="text-base font-semibold text-[#262626]">
           Package Status
@@ -42,12 +42,12 @@ export default function PackageStatusCard({ mode }: Props) {
         </button>
       </div>
 
-      <div className="mt-4 flex items-center gap-1 rounded-full bg-gray-100 ">
+      <div className="mt-5 lg:mt-4 flex items-center gap-1 rounded-full bg-gray-100 ">
         {TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 rounded-full px-2 py-1.5 text-[12px] font-medium transition-colors ${
+            className={`flex-1 rounded-full px-2 py-2 lg:py-1.5 text-[12px] font-medium transition-colors ${
               activeTab === tab
                 ? "bg-[#1C1C1E] text-white"
                 : "text-gray-500 hover:text-gray-700"

@@ -10,7 +10,7 @@ import {
   flexRender,
   SortingState,
 } from "@tanstack/react-table";
-import { ChevronDown, Filter, ArrowUpDown } from "lucide-react";
+import { ChevronDown, Filter, ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { FreightMode } from "@/types/warehouse";
 import { StorageRow } from "@/types/storage";
 import { STORAGE_DATA } from "@/data/Storage";
@@ -34,6 +34,31 @@ const columns = [
     header: "Category",
     cell: (info) => <span className="text-[#262626]">{info.getValue()}</span>,
   }),
+  // Combined bar + percentage column — this is the ONLY storage column shown
+  // on mobile (matches Image 1). On desktop it's hidden in favor of the two
+  // separate columns below (matches Image 2).
+  columnHelper.accessor("percentage", {
+    id: "storageUsedCombined",
+    header: "Storage Used",
+    cell: (info) => (
+      <div className="flex flex-col gap-1.5">
+        <div className="h-2 w-24 overflow-hidden rounded-full bg-gray-100 sm:w-36">
+          <div
+            className="h-full rounded-full bg-[#8B7CF6]"
+            style={{ width: `${info.getValue()}%` }}
+          />
+        </div>
+        <span className="text-xs font-medium text-[#262626]">
+          {info.getValue()}%{" "}
+          <span className="font-normal text-gray-400">
+            &middot; {info.row.original.availableSpace}/
+            {info.row.original.totalSpace}
+          </span>
+        </span>
+      </div>
+    ),
+  }),
+  // Desktop-only: bar alone
   columnHelper.accessor("percentage", {
     id: "storageUsed",
     header: "Storage Used",
@@ -46,6 +71,7 @@ const columns = [
       </div>
     ),
   }),
+  // Desktop-only: percentage label
   columnHelper.accessor("percentage", {
     id: "percentageLabel",
     header: "Percentage",
@@ -53,7 +79,9 @@ const columns = [
       <span className="font-medium text-[#262626]">{info.getValue()}%</span>
     ),
   }),
+  // Desktop-only: available space
   columnHelper.accessor("availableSpace", {
+    id: "availableSpace",
     header: "Available Space",
     cell: (info) => (
       <span>
@@ -65,6 +93,11 @@ const columns = [
     ),
   }),
 ];
+
+// Columns hidden on mobile (desktop only)
+const DESKTOP_ONLY_IDS = new Set(["storageUsed", "percentageLabel", "availableSpace"]);
+// Column hidden on desktop (mobile only)
+const MOBILE_ONLY_IDS = new Set(["storageUsedCombined"]);
 
 export default function WarehouseStorageTable({ mode }: Props) {
   const data = STORAGE_DATA[mode];
@@ -102,13 +135,14 @@ export default function WarehouseStorageTable({ mode }: Props) {
   };
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white px-5 py-3 h-87.5">
+    <div className="rounded-2xl border border-slate-200 bg-white px-5 py-3 lg:h-87.5">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h3 className="text-base font-semibold text-[#262626]">
           Warehouse Storage
         </h3>
 
-        <div className="flex items-center gap-3">
+        {/* Desktop controls: Filter + Sort by (Image 2) */}
+        <div className="hidden items-center gap-3 sm:flex">
           <div className="relative">
             <select
               value={categoryFilter}
@@ -153,6 +187,15 @@ export default function WarehouseStorageTable({ mode }: Props) {
             </div>
           </div>
         </div>
+
+        {/* Mobile control: "..." overflow menu (Image 1) */}
+        <button
+          type="button"
+          aria-label="More options"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-50 sm:hidden"
+        >
+          <MoreHorizontal size={18} />
+        </button>
       </div>
 
       <div className="mt-6 overflow-x-auto">
@@ -160,28 +203,34 @@ export default function WarehouseStorageTable({ mode }: Props) {
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b border-[#E0E0E0]">
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    className="cursor-pointer select-none py-3 pr-4 text-left text-xs font-medium text-[#757575]"
-                  >
-                    <span className="inline-flex items-center gap-1">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      <ArrowUpDown
-                        size={12}
-                        className={
-                          header.column.getIsSorted()
-                            ? "text-[#8B7CF6]"
-                            : "text-gray-300"
-                        }
-                      />
-                    </span>
-                  </th>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  const isDesktopOnly = DESKTOP_ONLY_IDS.has(header.column.id);
+                  const isMobileOnly = MOBILE_ONLY_IDS.has(header.column.id);
+                  return (
+                    <th
+                      key={header.id}
+                      onClick={header.column.getToggleSortingHandler()}
+                      className={`cursor-pointer select-none py-3 pr-4 text-left text-xs font-medium text-[#757575] ${
+                        isDesktopOnly ? "hidden sm:table-cell" : ""
+                      } ${isMobileOnly ? "sm:hidden" : ""}`}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        <ArrowUpDown
+                          size={12}
+                          className={
+                            header.column.getIsSorted()
+                              ? "text-[#8B7CF6]"
+                              : "text-gray-300"
+                          }
+                        />
+                      </span>
+                    </th>
+                  );
+                })}
               </tr>
             ))}
           </thead>
@@ -189,11 +238,20 @@ export default function WarehouseStorageTable({ mode }: Props) {
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id} className="border-b border-[#E0E0E0] last:border-0">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="py-[11px] pr-4 text-sm">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const isDesktopOnly = DESKTOP_ONLY_IDS.has(cell.column.id);
+                  const isMobileOnly = MOBILE_ONLY_IDS.has(cell.column.id);
+                  return (
+                    <td
+                      key={cell.id}
+                      className={`py-[12px] pr-4 text-xs lg:text-sm ${
+                        isDesktopOnly ? "hidden sm:table-cell" : ""
+                      } ${isMobileOnly ? "sm:hidden" : ""}`}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
 

@@ -20,18 +20,18 @@ export default function WarehouseMapCard({ mode }: Props) {
     const categoryBlocks = WAREHOUSE_MAP_DATA[mode][floor] ?? [];
 
     return (
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 h-110.5">
-            <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-[#262626]">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:h-110.5 overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+                <h3 className="text-base font-semibold mb-3 sm:mb-0 text-[#262626]">
                     Warehouse Map
                 </h3>
 
-                <div className="flex items-center rounded-full bg-gray-100">
+                <div className="flex items-center rounded-lg bg-gray-100">
                     {FLOORS.map((f) => (
                         <button
                             key={f}
                             onClick={() => setFloor(f)}
-                            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${floor === f
+                            className={`rounded-lg w-1/3 sm:w-auto px-4 py-2 text-sm font-medium transition-colors ${floor === f
                                     ? "bg-[#1C1C1E] text-white"
                                     : "text-gray-500 hover:text-gray-700"
                                 }`}
@@ -51,9 +51,12 @@ export default function WarehouseMapCard({ mode }: Props) {
                     <div className="flex flex-wrap gap-4">
                         {categoryBlocks.map((block) => {
                             const sectionCount = block.sections.length;
-                            // Min width fits every badge in one row, so a 10-section
-                            // category (e.g. Apparel) doesn't wrap internally like a
-                            // 3-section one (e.g. Electronics).
+                            // Min width fits every badge in one row — this trick is
+                            // ONLY applied at lg+ (see className below). Below lg we
+                            // let the card size naturally so badges wrap on their own
+                            // instead of being squeezed by a min-width meant for a
+                            // much wider viewport (that squeeze is what caused the
+                            // uneven/empty-looking badge rows on mobile & tablet).
                             const minWidth =
                                 sectionCount * BADGE_SIZE +
                                 (sectionCount - 1) * BADGE_GAP +
@@ -62,13 +65,13 @@ export default function WarehouseMapCard({ mode }: Props) {
                             return (
                                 <div
                                     key={block.category}
-                                    className="rounded-xl border border-gray-200 bg-white p-4"
-                                    style={{
-                                        minWidth: `${minWidth}px`,
-
-                                        flexGrow: sectionCount,
-                                        flexBasis: `${minWidth}px`,
-                                    }}
+                                    className="w-full rounded-xl border border-gray-200 bg-white p-4 sm:w-[calc(50%-0.5rem)] lg:w-auto lg:flex-none lg:basis-[var(--card-min-w)] lg:grow-[var(--card-grow)]"
+                                    style={
+                                        {
+                                            "--card-min-w": `${minWidth}px`,
+                                            "--card-grow": sectionCount,
+                                        } as React.CSSProperties
+                                    }
                                 >
                                     <h4 className="text-[15px] font-semibold text-[#262626]">
                                         {block.category}

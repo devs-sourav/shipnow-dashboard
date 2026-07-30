@@ -20,7 +20,7 @@ export default function WarehouseActivityLogCard({ mode }: Props) {
   const entries = ACTIVITY_LOG_DATA[mode];
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white px-4 pt-4 h-[443px] pb-2">
+    <div className="rounded-2xl border border-slate-200 bg-white px-4 pt-4 lg:h-[443px] pb-2">
       <div className="flex items-center justify-between">
         <h3 className="text-base font-semibold text-[#262626]">
           Warehouse Activity Log

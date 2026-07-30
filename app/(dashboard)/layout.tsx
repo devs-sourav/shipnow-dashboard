@@ -196,7 +196,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const sidebarContent = (
     <>
-      <div>
+      <div className="mb-19">
         {/* Logo + mobile close button */}
         <div className="mb-6 flex items-center justify-between gap-2 px-1 ">
           <div className="flex items-center gap-2">
@@ -249,7 +249,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         <nav className="space-y-1">{mainMenus.map(renderMenuItem)}</nav>
         <div className="my-4 border-t border-gray-100" />
-        <nav className="space-y-1">{utilityMenus.map(renderMenuItem)}</nav>
+        <nav className="space-y-1 ">{utilityMenus.map(renderMenuItem)}</nav>
       </div>
 
       <div className="hidden lg:block !mt-auto">

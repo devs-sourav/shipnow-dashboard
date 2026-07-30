@@ -15,121 +15,120 @@ import WarehouseActivityLogCard from "@/components/warehouse/Warehouseactivitylo
 export type FreightMode = "road" | "rail" | "ocean" | "air";
 
 const TABS = [
-  {
-    key: "road",
-    label: "Road Freight",
-    icon: Truck,
-  },
-  {
-    key: "rail",
-    label: "Rail Freight",
-    icon: TrainFront,
-  },
-  {
-    key: "ocean",
-    label: "Ocean Freight",
-    icon: Ship,
-  },
-  {
-    key: "air",
-    label: "Air Freight",
-    icon: Plane,
-  },
+    {
+        key: "road",
+        label: "Road Freight",
+        icon: Truck,
+    },
+    {
+        key: "rail",
+        label: "Rail Freight",
+        icon: TrainFront,
+    },
+    {
+        key: "ocean",
+        label: "Ocean Freight",
+        icon: Ship,
+    },
+    {
+        key: "air",
+        label: "Air Freight",
+        icon: Plane,
+    },
 ] satisfies {
-  key: FreightMode;
-  label: string;
-  icon: React.ElementType;
+    key: FreightMode;
+    label: string;
+    icon: React.ElementType;
 }[];
 
 export default function WarehouseDashboardClient() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
-  const mode = searchParams.get("mode") as FreightMode | null;
+    const mode = searchParams.get("mode") as FreightMode | null;
 
-  const activeMode: FreightMode = TABS.some((tab) => tab.key === mode)
-    ? (mode as FreightMode)
-    : "road";
+    const activeMode: FreightMode = TABS.some((tab) => tab.key === mode)
+        ? (mode as FreightMode)
+        : "road";
 
-  const handleTabClick = (mode: FreightMode) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("mode", mode);
-    router.push(`${pathname}?${params.toString()}`);
-  };
+    const handleTabClick = (mode: FreightMode) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("mode", mode);
+        router.push(`${pathname}?${params.toString()}`);
+    };
 
-  return (
-    <div className="space-y-4 pt-4">
-      {/* Header */}
+    return (
+        <div className="space-y-4 pt-4">
+            {/* Header */}
 
-      <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Warehouse</h1>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 className="text-[24px] font-bold">Warehouse</h1>
+                    <nav className="mt-1 flex items-center text-xs lg:text-sm">
+                        <Link href="/dashboard" className="text-indigo-600">Dashboard</Link>
+                        <span className="mx-2">/</span>
+                        <span>Warehouse</span>
+                    </nav>
+                </div>
 
-          <nav className="mt-1 flex items-center text-sm">
-            <Link href="/dashboard" className="text-indigo-600">
-              Dashboard
-            </Link>
+                <div className="flex justify-between gap-1 lg:gap-2 rounded-xl bg-white overflow-x-auto">
+                    {TABS.map(({ key, label, icon: Icon }) => {
+                        const active = activeMode === key;
+                        return (
+                            <button
+                                key={key}
+                                onClick={() => handleTabClick(key)}
+                                className={`flex shrink-0 items-center gap-2 rounded-md px-3 py-3 text-xs lg:text-sm font-medium transition-colors duration-200 whitespace-nowrap ${active ? "bg-black text-white" : "text-gray-700"
+                                    }`}
+                            >
+                                <Icon size={18} />
+                                <span
+                                    className={`grid text-xs transition-[grid-template-columns] duration-300 ease-in-out ${active ? "grid-cols-[1fr]" : "grid-cols-[0fr]"
+                                        } md:grid-cols-[1fr]`}
+                                    style={{ display: "grid" }}
+                                >
+                                    <span className="overflow-hidden">{label}</span>
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
 
-            <span className="mx-2">/</span>
+            {/* Dashboard */}
 
-            <span>Warehouse</span>
-          </nav>
+            <div className="grid grid-cols-12 gap-4">
+
+                <div className="col-span-12 lg:col-span-3 order-1">
+                    <Stats mode={activeMode} />
+                </div>
+
+                <div className="col-span-12 lg:col-span-6  rounded-xl order-2">
+                    <InventoryCard mode={activeMode} />
+                </div>
+
+                <div className="col-span-12 md:col-span-6 lg:col-span-3  rounded-xl  order-3">
+                    <CapacityUsageCard mode={activeMode} />
+                </div>
+                <div className="col-span-12 lg:col-span-9 order-5 lg:order-4">
+                    <WarehouseStorageTable mode={activeMode} />
+                </div>
+                <div className="col-span-12 md:col-span-6 lg:col-span-3  order-4 lg:order-5">
+
+                    <PackageStatusCard mode={activeMode} />
+
+                </div>
+
+                <div className="col-span-12 lg:col-span-9 order-6">
+                    <WarehouseMapCard mode={activeMode} />
+                </div>
+
+                <div className="col-span-12 lg:col-span-3 order-7">
+                    <WarehouseActivityLogCard mode={activeMode} />
+                </div>
+
+            </div>
         </div>
-
-        <div className="flex gap-2 overflow-x-auto rounded-xl  bg-white ">
-          {TABS.map(({ key, label, icon: Icon }) => {
-            const active = activeMode === key;
-
-            return (
-              <button
-                key={key}
-                onClick={() => handleTabClick(key)}
-                className={`flex items-center gap-2 rounded-lg px-4 py-3 transition ${active
-                  ? "bg-black text-white"
-                  : "hover:bg-gray-100 text-gray-700"
-                  }`}>
-                <Icon size={18} />
-                {label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Dashboard */}
-
-      <div className="grid grid-cols-12 gap-4">
-
-        <div className="col-span-3">
-          <Stats mode={activeMode} />
-        </div>
-
-        <div className="col-span-6  rounded-xl ">
-          <InventoryCard mode={activeMode} />
-        </div>
-
-        <div className="col-span-3  rounded-xl h-72">
-          <CapacityUsageCard mode={activeMode} />
-        </div>
-        <div className="col-span-9">
-          <WarehouseStorageTable mode ={activeMode}/>
-        </div>
-        <div className="col-span-3 h-7">
-
-          <PackageStatusCard  mode={activeMode}/>
-
-        </div>
-
-        <div className="col-span-9 ">
-          <WarehouseMapCard mode={activeMode}/>
-        </div>
-
-        <div className="col-span-3">
-          <WarehouseActivityLogCard mode={activeMode}/>
-        </div>
-
-      </div>
-    </div>
-  );
+    );
 }

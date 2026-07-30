@@ -12,7 +12,7 @@ export default function StatsCard({ mode }: Props) {
   const stats = STATS_DATA[mode];
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4 lg:h-73.25">
       {stats.map((item) => (
         <StatCardItem key={item.id} item={item} />
       ))}
