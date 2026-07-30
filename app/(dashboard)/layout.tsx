@@ -1,10 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard,
   Presentation,
@@ -86,15 +86,19 @@ const breadcrumbMap: Record<string, string> = {
   "/create-shipment": "Create New Shipment",
 };
 
+// pages jekhane "Add New Shipping" button er jaygay search box thakbe
+const SEARCH_ONLY_PAGES = ["/dashboard", "/invoices"];
+
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [greeting, setGreeting] = useState("Good Morning");
   const [tooltip, setTooltip] = useState<TooltipState>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  // if (pathname === "/dashboard") return null;
-  // const pageName = breadcrumbMap[pathname];
-  // if (!pageName) return null;
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setGreeting(getGreeting());
@@ -106,6 +110,45 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  // Route change hole search input o URL er current "q" er sathe sync hobe
+  useEffect(() => {
+    setSearchQuery(searchParams.get("q") ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  const updateSearchParam = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set("q", value);
+      } else {
+        params.delete("q");
+      }
+      const query = params.toString();
+      router.replace(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setSearchQuery(value);
+
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        updateSearchParam(value);
+      }, 300);
+    },
+    [updateSearchParam],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   const showTooltip = useCallback(
     (e: React.SyntheticEvent<HTMLElement>, label: string) => {
@@ -125,6 +168,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   // create-shipment page theke back button click korle /shipments e jabe
   const backHref = pathname === "/create-shipment" ? "/shipments" : "/dashboard";
+
+  const showSearchBox = SEARCH_ONLY_PAGES.includes(pathname);
+  const showAddButton = pathname !== "/invoices";
 
   const mainMenus = [
     { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -365,21 +411,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {/* Desktop: search + add button */}
 
               <div className="hidden items-center gap-4 md:flex">
-                {pathname === "/dashboard" && (
+                {showSearchBox && (
                   <div className="flex w-72 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
                     <Search size={18} className="text-gray-400" />
                     <input
                       type="text"
+                      value={searchQuery}
+                      onChange={handleSearchChange}
                       placeholder="Search anything"
                       className="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-400"
                     />
                   </div>
                 )}
 
-                <Link href={"/create-shipment"} className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-700">
-                  <Plus size={16} />
-                  <span>Add New Shipping</span>
-                </Link>
+                {showAddButton && (
+                  <Link href={"/create-shipment"} className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-700">
+                    <Plus size={16} />
+                    <span>Add New Shipping</span>
+                  </Link>
+                )}
               </div>
 
               {/* Mobile: hamburger */}
@@ -393,7 +443,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
 
             {/* Mobile: search row + add button */}
-            {pathname === "/dashboard" && (
+            {showSearchBox && (
               <div className="mt-4 flex items-center gap-3 md:hidden w-full">
                 <div className="flex items-center gap-3 md:hidden w-full">
 
@@ -401,16 +451,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <Search size={18} className="text-gray-400" />
                     <input
                       type="text"
+                      value={searchQuery}
+                      onChange={handleSearchChange}
                       placeholder="Search anything"
                       className="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-400"
                     />
                   </div>
 
-
-                  <button className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
-                    <Plus size={18} />
-                    <span className="hidden">Add New Shipping</span>
-                  </button>
+                  {showAddButton && (
+                    <button className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
+                      <Plus size={18} />
+                      <span className="hidden">Add New Shipping</span>
+                    </button>
+                  )}
                 </div>
 
               </div>)}

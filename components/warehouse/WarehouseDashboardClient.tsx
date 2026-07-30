@@ -63,7 +63,7 @@ export default function WarehouseDashboardClient() {
             {/* Header */}
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
+                <div className="hidden sm:block">
                     <h1 className="text-[24px] font-bold">Warehouse</h1>
                     <nav className="mt-1 flex items-center text-xs lg:text-sm">
                         <Link href="/dashboard" className="text-indigo-600">Dashboard</Link>

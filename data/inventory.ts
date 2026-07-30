@@ -5,8 +5,8 @@ export const INVENTORY_DATA: Record<FreightMode, InventoryData> = {
   road: {
     totalPackages: 10000,
     items: [
-      { name: "Electronics", percentage: 25, packages: 2500, color: "#7C5CFC" },
-      { name: "Apparel", percentage: 20, packages: 2000, color: "#8B6BFF", striped: true },
+      { name: "Electronics", percentage: 65, packages: 2500, color: "#7C5CFC" },
+      { name: "Apparel", percentage: 40, packages: 2000, color: "#8B6BFF", striped: true },
       { name: "Home & Kitchen", percentage: 18, packages: 1800, color: "#2F2F2F" },
       { name: "Beauty & Health", percentage: 15, packages: 1500, color: "#3A3A3A", striped: true },
       { name: "Automotive Parts", percentage: 12, packages: 1200, color: "#8A8A8A" },
