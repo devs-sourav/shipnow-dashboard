@@ -125,7 +125,7 @@ export default function WarehouseDashboardClient() {
           <WarehouseMapCard mode={activeMode}/>
         </div>
 
-        <div className="col-span-3 bg-white">
+        <div className="col-span-3">
           <WarehouseActivityLogCard mode={activeMode}/>
         </div>
 
