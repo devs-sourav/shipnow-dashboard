@@ -1,10 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Presentation,
@@ -91,14 +91,18 @@ const SEARCH_ONLY_PAGES = ["/dashboard", "/invoices"];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [greeting, setGreeting] = useState("Good Morning");
   const [tooltip, setTooltip] = useState<TooltipState>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+    },
+    [],
+  );
 
   useEffect(() => {
     setGreeting(getGreeting());
@@ -110,45 +114,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
-
-  // Route change hole search input o URL er current "q" er sathe sync hobe
-  useEffect(() => {
-    setSearchQuery(searchParams.get("q") ?? "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
-
-  const updateSearchParam = useCallback(
-    (value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value) {
-        params.set("q", value);
-      } else {
-        params.delete("q");
-      }
-      const query = params.toString();
-      router.replace(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
-    },
-    [pathname, router, searchParams],
-  );
-
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setSearchQuery(value);
-
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => {
-        updateSearchParam(value);
-      }, 300);
-    },
-    [updateSearchParam],
-  );
-
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, []);
 
   const showTooltip = useCallback(
     (e: React.SyntheticEvent<HTMLElement>, label: string) => {
@@ -409,7 +374,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
 
               {/* Desktop: search + add button */}
-
               <div className="hidden items-center gap-4 md:flex">
                 {showSearchBox && (
                   <div className="flex w-72 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
