@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Presentation,
@@ -107,6 +107,7 @@ const breadcrumbMap: Record<string, string> = {
 const SEARCH_ONLY_PAGES = ["/dashboard", "/invoices"];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const router = useRouter();
   const pathname = usePathname();
 
   const [greeting, setGreeting] = useState("Good Morning");
@@ -122,6 +123,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 
   const clearSearch = useCallback(() => setSearchQuery(""), []);
+
+  // create-shipment page e "back" button click korle browser history'r
+  // thik agerta page e fere jabe — user jekhan theke eshechilo (dashboard,
+  // shipments, invoices, jekhano) thik sekhanei ferot jabe.
+  const handleBack = useCallback(() => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      // direct URL load / bookmark hole history te kichu nei, tokhon
+      // fallback hisebe shipments e pathiye dei
+      router.push("/shipments");
+    }
+  }, [router]);
 
   useEffect(() => {
     setGreeting(getGreeting());
@@ -168,9 +182,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       window.removeEventListener("resize", handleScrollOrResize);
     };
   }, [tooltip]);
-
-  // create-shipment page theke back button click korle /shipments e jabe
-  const backHref = pathname === "/create-shipment" ? "/shipments" : "/dashboard";
 
   const showSearchBox = SEARCH_ONLY_PAGES.includes(pathname);
   const showAddButton = pathname !== "/invoices";
@@ -396,13 +407,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
               <h1 className="flex items-center gap-2 text-[16px] font-semibold md:hidden text-gray-900">
                 {pathname === "/create-shipment" && (
-                  <Link
-                    href={backHref}
-                    aria-label="Back to Shipments"
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    aria-label="Go back"
                     className="text-gray-700"
                   >
                     <ArrowLeft size={18} />
-                  </Link>
+                  </button>
                 )}
                 {pathname === "/dashboard"
                   ? "Dashboard"
@@ -421,13 +433,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   <div>
                     <h1 className="mb-1 flex items-center gap-2 text-2xl font-bold text-gray-900">
                       {pathname === "/create-shipment" && (
-                        <Link
-                          href={backHref}
-                          aria-label="Back to Shipments"
+                        <button
+                          type="button"
+                          onClick={handleBack}
+                          aria-label="Go back"
                           className="text-gray-700 transition hover:text-violet-700"
                         >
                           <ArrowLeft size={22} />
-                        </Link>
+                        </button>
                       )}
                       {breadcrumbMap[pathname]}
                     </h1>

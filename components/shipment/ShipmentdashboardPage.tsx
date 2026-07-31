@@ -32,6 +32,7 @@ import type { Status, Mode } from "@/types/shipment";
 import { SHIPMENTS } from "@/data/shipments";
 import ShipmentCard from "./Shipmentcard";
 import Image from "next/image";
+import Link from "next/link";
 
 const TABS: Array<"All" | Status> = [
   "All",
@@ -479,14 +480,14 @@ export default function ShipmentDashboard() {
           </div>
 
           {/* Add button (mobile) */}
-          <button
+          <Link href="/create-shipment"
             onClick={() => {
-              // TODO: wire up "add shipment" action
+              // nav
             }}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#333] text-white"
           >
             <Plus className="h-4 w-4" />
-          </button>
+          </Link>
         </div>
 
         {/* Row 2: status select + view toggle (left) — filter + sort grouped (right) */}
