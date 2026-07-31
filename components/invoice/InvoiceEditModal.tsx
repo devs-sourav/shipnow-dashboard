@@ -125,7 +125,7 @@ export default function InvoiceEditModal({ mode, invoice, onClose, onSave }: Inv
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`flex max-h-[90vh] w-full max-w-3xl flex-col rounded-2xl bg-white shadow-2xl transition-all duration-200 ease-out ${
+        className={`flex max-h-[90vh] w-[80%] lg:w-full max-w-3xl flex-col rounded-2xl bg-white shadow-2xl transition-all duration-200 ease-out ${
           showAnimated ? "translate-y-0 scale-100 opacity-100" : "translate-y-3 scale-[0.97] opacity-0"
         }`}
       >

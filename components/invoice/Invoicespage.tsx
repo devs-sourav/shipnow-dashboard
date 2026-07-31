@@ -62,7 +62,7 @@ export default function InvoicesPage() {
       <StatsCardsOverview invoices={invoices} />
 
       <div className="grid grid-cols-12 gap-4">
-        <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white col-span-7">
+        <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white col-span-12 lg:col-span-7">
           <InvoiceTable
             invoices={invoices}
             selectedId={selected?.id ?? null}
@@ -72,7 +72,7 @@ export default function InvoicesPage() {
             onBulkDelete={handleBulkDelete}
           />
         </div>
-        <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white col-span-5">
+        <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white col-span-12 lg:col-span-5">
           <InvoiceDetails
             invoice={selected}
             onEdit={(inv) => setModal({ mode: "edit", invoice: inv })}
