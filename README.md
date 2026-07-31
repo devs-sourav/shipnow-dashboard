@@ -48,22 +48,22 @@ Open **http://localhost:3000** in your browser.
 
 # Screen Status
 
-| Screen                 | Status                              |
-| ---------------------- | ----------------------------------- |
-| Login                  | ✅ Complete                          |
-| Dashboard              | ✅ Complete                          |
-| Shipments (Table View) | ✅ Complete                          |
-| Shipments (Grid View)  | ✅ Complete                          |
-| View Switcher          | ✅ Complete                          |
-| Create New Shipment    | ✅ Complete                          |
-| Warehouse              | ✅ Complete                          |
-| Invoices & Billing     | 🟡 Implemented (Responsive Pending) |
+| Screen                 | Responsive |   Status   |
+| ---------------------- | :--------: | :--------: |
+| Login                  |      ✅     | ✅ Complete |
+| Dashboard              |      ✅     | ✅ Complete |
+| Shipments (Table View) |      ✅     | ✅ Complete |
+| Shipments (Grid View)  |      ✅     | ✅ Complete |
+| View Switcher          |      ✅     | ✅ Complete |
+| Create New Shipment    |      ✅     | ✅ Complete |
+| Warehouse              |      ✅     | ✅ Complete |
+| Invoices & Billing     |      ✅     | ✅ Complete |
 
 ---
 
 # Features Implemented
 
-* Responsive layout for Dashboard, Shipments, and Warehouse
+* Fully responsive layout for Desktop, Tablet, and Mobile
 * Reusable component architecture
 * Sidebar navigation
 * Mobile drawer
@@ -86,8 +86,8 @@ Open **http://localhost:3000** in your browser.
 
 # Known Issues
 
-* **Invoices & Billing** page is implemented, but responsive optimization for smaller screen sizes is still in progress.
 * All data is powered by local mock data.
+* No backend or API integration has been implemented.
 
 ---
 
@@ -137,6 +137,6 @@ The application is deployed on **Vercel** and is publicly accessible.
 
 * Built according to the provided Figma design.
 * Focused on reusable components and clean project structure.
-* Dashboard, Shipment, and Warehouse pages are fully responsive.
-* Invoices & Billing functionality has been implemented; responsive optimization is currently pending.
+* Fully responsive across Desktop, Tablet, and Mobile devices.
+* Uses local mock data throughout the application.
 * Uses TypeScript throughout the project.
