@@ -112,10 +112,10 @@ export default function Home() {
       {showLogin && (
         <main className="min-h-screen w-full sm:h-[1024px] md:w-full mx-auto">
         {/* <main className="min-h-screen w-full sm:h-[1024px] md:w-[1440px] mx-auto"> */}
-          <div className="grid grid-cols-1 md:grid-cols-2  sm:h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2  sm:h-full">
             {/* LEFT */}
             <section className="relative flex flex-col items-center justify-center bg-[#856DF3] py-10 h-[844px] sm:h-[1024px]">
-              <div>
+              <div className="">
                 <Image
                   src="/assets/logo/Logo.png"
                   alt="logo"
