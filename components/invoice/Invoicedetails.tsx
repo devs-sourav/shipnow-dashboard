@@ -234,7 +234,7 @@ export default function InvoiceDetails({ invoice, onEdit, onHold, onSend, onBack
           onClick={() => onSend?.(invoice)}
           className="flex-[1.6] inline-flex items-center justify-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-3 text-sm font-medium text-white hover:bg-neutral-800"
         >
-          <FiSend className="h-3.5 w-3.5" />
+          <FiSend className="h-3.5 w-3.5 hidden sm:inline-block" />
           Send Invoice
         </button>
       </div>
