@@ -6,6 +6,7 @@ import { Invoice } from "@/types/invoice";
 import InvoiceTable from "./Invoicetable";
 import InvoiceDetails from "./Invoicedetails";
 import InvoiceEditModal from "./InvoiceEditModal";
+import StatsCardsOverview from "./StatsCardsOverview";
 import Toast from "./Toast";
 
 export default function InvoicesPage() {
@@ -57,36 +58,40 @@ export default function InvoicesPage() {
   };
 
   return (
-    <div className="grid grid-cols-12 gap-4">
-      <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white col-span-7">
-        <InvoiceTable
-          invoices={invoices}
-          selectedId={selected?.id ?? null}
-          onSelect={setSelected}
-          onNewInvoice={() => setModal({ mode: "new", invoice: null })}
-          onBulkMarkPaid={handleBulkMarkPaid}
-          onBulkDelete={handleBulkDelete}
-        />
-      </div>
-      <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white col-span-5">
-        <InvoiceDetails
-          invoice={selected}
-          onEdit={(inv) => setModal({ mode: "edit", invoice: inv })}
-          onHold={handleHold}
-          onSend={handleSend}
-        />
-      </div>
+    <div className="space-y-4">
+      <StatsCardsOverview invoices={invoices} />
 
-      {modal && (
-        <InvoiceEditModal
-          mode={modal.mode}
-          invoice={modal.invoice}
-          onClose={() => setModal(null)}
-          onSave={handleSave}
-        />
-      )}
+      <div className="grid grid-cols-12 gap-4">
+        <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white col-span-7">
+          <InvoiceTable
+            invoices={invoices}
+            selectedId={selected?.id ?? null}
+            onSelect={setSelected}
+            onNewInvoice={() => setModal({ mode: "new", invoice: null })}
+            onBulkMarkPaid={handleBulkMarkPaid}
+            onBulkDelete={handleBulkDelete}
+          />
+        </div>
+        <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white col-span-5">
+          <InvoiceDetails
+            invoice={selected}
+            onEdit={(inv) => setModal({ mode: "edit", invoice: inv })}
+            onHold={handleHold}
+            onSend={handleSend}
+          />
+        </div>
 
-      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+        {modal && (
+          <InvoiceEditModal
+            mode={modal.mode}
+            invoice={modal.invoice}
+            onClose={() => setModal(null)}
+            onSave={handleSave}
+          />
+        )}
+
+        {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+      </div>
     </div>
   );
 }
