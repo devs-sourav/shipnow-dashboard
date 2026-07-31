@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -38,6 +38,23 @@ import PromoBanner from "@/components/sidebar/PromoBanner";
 
 interface DashboardLayoutProps {
   children: ReactNode;
+}
+
+// ---- Header'er search box'er value child page (Dashboard/Invoices) e
+// pathanor jonno context. URL/searchParams lagbe na — ekhane just current
+// page'er data filter korar jonno value ta share kora hocche. ----
+const PageSearchContext = createContext<string>("");
+
+/**
+ * Child page (jemon /invoices, /dashboard) e call korle header search box'er
+ * current value pawa jabe, tai diye nijer list/table filter kora jabe.
+ *
+ * Example:
+ *   const query = usePageSearch();
+ *   const filtered = invoices.filter(inv => inv.company.toLowerCase().includes(query.toLowerCase()));
+ */
+export function usePageSearch(): string {
+  return useContext(PageSearchContext);
 }
 
 // ---- Time onujayi greeting ber korar function ----
@@ -104,15 +121,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     [],
   );
 
+  const clearSearch = useCallback(() => setSearchQuery(""), []);
+
   useEffect(() => {
     setGreeting(getGreeting());
     const interval = setInterval(() => setGreeting(getGreeting()), 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Route change hole mobile drawer nijer theke bondho hoye jak
+  // Route change hole mobile drawer bondho hoye jak, search box'o fresh
+  // hoye jak, ar sidebar tooltip o clear hoye jak (na hole navigate korar
+  // por o purono tooltip stuck hoye thake, touch device e mouseleave na
+  // fire howar karone).
   useEffect(() => {
     setMobileOpen(false);
+    setSearchQuery("");
+    setTooltip(null);
   }, [pathname]);
 
   const showTooltip = useCallback(
@@ -130,6 +154,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 
   const hideTooltip = useCallback(() => setTooltip(null), []);
+
+  // Scroll hole tooltip'er position stale hoye jay (fixed position, but
+  // getBoundingClientRect() ekbar e calculate kora), tai scroll korle
+  // tooltip ta hide kore dei jate "floating/stuck" tooltip na dekhay.
+  useEffect(() => {
+    if (!tooltip) return;
+    const handleScrollOrResize = () => setTooltip(null);
+    window.addEventListener("scroll", handleScrollOrResize, true);
+    window.addEventListener("resize", handleScrollOrResize);
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize, true);
+      window.removeEventListener("resize", handleScrollOrResize);
+    };
+  }, [tooltip]);
 
   // create-shipment page theke back button click korle /shipments e jabe
   const backHref = pathname === "/create-shipment" ? "/shipments" : "/dashboard";
@@ -163,6 +201,54 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { Icon: FaLinkedinIn, label: "Linkedin", href: "https://linkedin.com" },
   ];
 
+  // Header'er search box e kichu type korle, matching left-sidebar
+  // (mainMenus + utilityMenus) option gola dropdown akare dekhano hoy.
+  type NavItem = {
+    title: string;
+    href: string;
+    icon: (typeof mainMenus)[number]["icon"];
+    badge?: number;
+  };
+  const allNavItems: NavItem[] = [...mainMenus, ...utilityMenus];
+  const trimmedQuery = searchQuery.trim().toLowerCase();
+  const searchResults = trimmedQuery
+    ? allNavItems.filter((item) => item.title.toLowerCase().includes(trimmedQuery))
+    : [];
+
+  const renderSearchDropdown = () => {
+    if (!trimmedQuery) return null;
+    return (
+      <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5">
+        {searchResults.length > 0 ? (
+          <ul className="max-h-72 overflow-y-auto py-1">
+            {searchResults.map((item) => {
+              const Icon = item.icon;
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={clearSearch}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 transition hover:bg-violet-50 hover:text-violet-700"
+                  >
+                    <Icon size={16} className="shrink-0 text-gray-400" />
+                    <span>{item.title}</span>
+                    {"badge" in item && item.badge ? (
+                      <span className="ml-auto rounded-md bg-violet-600 px-2 py-0.5 text-xs font-semibold text-white">
+                        {item.badge}
+                      </span>
+                    ) : null}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="px-4 py-3 text-sm text-gray-400">No search result found</p>
+        )}
+      </div>
+    );
+  };
+
   const renderMenuItem = (
     menu: (typeof mainMenus)[number] & { badge?: number },
   ) => {
@@ -180,6 +266,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         onMouseLeave={hideTooltip}
         onFocus={(e) => showTooltip(e, label)}
         onBlur={hideTooltip}
+        onClick={hideTooltip}
         className={`group flex items-center justify-center gap-3 rounded-xl px-4 py-2.5 outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-violet-400 lg:justify-between ${active
           ? "bg-violet-100 font-semibold text-violet-700"
           : "text-gray-500 hover:bg-violet-50 hover:text-violet-700"
@@ -240,6 +327,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           aria-label="John Doe, Admin"
           onMouseEnter={(e) => showTooltip(e, "John Doe · Admin")}
           onMouseLeave={hideTooltip}
+          onClick={hideTooltip}
           className="mb-6 flex w-full cursor-pointer items-center justify-center gap-3 bg-[#F0F0F0] rounded-xl border border-gray-100 px-2 py-2 text-left transition hover:bg-violet-100 lg:justify-between"
         >
           <span className="flex items-center gap-3">
@@ -376,8 +464,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {/* Desktop: search + add button */}
               <div className="hidden items-center gap-4 md:flex">
                 {showSearchBox && (
-                  <div className="flex w-72 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
-                    <Search size={18} className="text-gray-400" />
+                  <div className="relative flex w-72 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
+                    <Search size={18} className="text-gray-400 shrink-0" />
                     <input
                       type="text"
                       value={searchQuery}
@@ -385,6 +473,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       placeholder="Search anything"
                       className="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-400"
                     />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={clearSearch}
+                        aria-label="Clear search"
+                        className="shrink-0 text-gray-400 transition hover:text-gray-600"
+                      >
+                        <X size={15} />
+                      </button>
+                    )}
+                    {renderSearchDropdown()}
                   </div>
                 )}
 
@@ -411,8 +510,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="mt-4 flex items-center gap-3 md:hidden w-full">
                 <div className="flex items-center gap-3 md:hidden w-full">
 
-                  <div className="flex w-full items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
-                    <Search size={18} className="text-gray-400" />
+                  <div className="relative flex w-full items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-sm">
+                    <Search size={18} className="text-gray-400 shrink-0" />
                     <input
                       type="text"
                       value={searchQuery}
@@ -420,20 +519,39 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       placeholder="Search anything"
                       className="w-full bg-transparent text-sm text-gray-600 outline-none placeholder:text-gray-400"
                     />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={clearSearch}
+                        aria-label="Clear search"
+                        className="shrink-0 text-gray-400 transition hover:text-gray-600"
+                      >
+                        <X size={15} />
+                      </button>
+                    )}
+                    {renderSearchDropdown()}
                   </div>
 
                   {showAddButton && (
-                    <button className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
+                    <Link
+                      href={"/create-shipment"}
+                      aria-label="Add New Shipping"
+                      className="flex items-center gap-2 rounded-xl bg-[#333333] cursor-pointer px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700"
+                    >
                       <Plus size={18} />
                       <span className="hidden">Add New Shipping</span>
-                    </button>
+                    </Link>
                   )}
                 </div>
 
               </div>)}
           </header>
           <section>
-            <main className="flex-1 px-3 pb-4 sm:px-4">{children}</main>
+            <main className="flex-1 px-3 pb-4 sm:px-4">
+              <PageSearchContext.Provider value={searchQuery}>
+                {children}
+              </PageSearchContext.Provider>
+            </main>
           </section>
 
 
