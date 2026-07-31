@@ -4,11 +4,11 @@ A responsive logistics dashboard built with **Next.js**, **TypeScript**, **Tailw
 
 ## 🚀 Live Demo
 
-**Live URL:** https://shipnow-dashboard.vercel.app
+**Live URL:** https://shipnow-dashboard.vercel.app
 
 ## 📂 GitHub Repository
 
-**Repository: **https://github.com/devs-sourav/shipnow-dashboard
+**Repository:** https://github.com/devs-sourav/shipnow-dashboard
 
 ---
 
@@ -27,7 +27,7 @@ A responsive logistics dashboard built with **Next.js**, **TypeScript**, **Tailw
 ### Clone the repository
 
 ```bash
-git clone https://github.com/your-username/shipnow-dashboard.git
+git clone https://github.com/devs-sourav/shipnow-dashboard.git
 ```
 
 ### Install dependencies
@@ -42,28 +42,28 @@ npm install
 npm run dev
 ```
 
-Open [**http://localhost:3000**](http://localhost:3000) in your browser.
+Open **http://localhost:3000** in your browser.
 
 ---
 
 # Screen Status
 
-| Screen                 | Status          |
-| ---------------------- | --------------- |
-| Login                  | ✅ Complete      |
-| Dashboard              | ✅ Complete      |
-| Shipments (Table View) | ✅ Complete      |
-| Shipments (Grid View)  | ✅ Complete      |
-| View Switcher          | ✅ Complete      |
-| Create New Shipment    | ✅ Complete      |
-| Warehouse              | ✅ Complete      |
-| Invoices & Billing     | ❌ Not Attempted |
+| Screen                 | Status                              |
+| ---------------------- | ----------------------------------- |
+| Login                  | ✅ Complete                          |
+| Dashboard              | ✅ Complete                          |
+| Shipments (Table View) | ✅ Complete                          |
+| Shipments (Grid View)  | ✅ Complete                          |
+| View Switcher          | ✅ Complete                          |
+| Create New Shipment    | ✅ Complete                          |
+| Warehouse              | ✅ Complete                          |
+| Invoices & Billing     | 🟡 Implemented (Responsive Pending) |
 
 ---
 
 # Features Implemented
 
-* Responsive layout for Desktop, Tablet, and Mobile
+* Responsive layout for Dashboard, Shipments, and Warehouse
 * Reusable component architecture
 * Sidebar navigation
 * Mobile drawer
@@ -73,11 +73,12 @@ Open [**http://localhost:3000**](http://localhost:3000) in your browser.
 * Shipment Grid View
 * View switcher between Table and Grid
 * Search functionality
-* Filter tabs
+* Filtering
 * Sorting
 * Pagination
 * Form validation
 * Warehouse dashboard
+* Invoices & Billing module
 * Mock data organization by feature
 * Fully static frontend (No backend/API)
 
@@ -85,8 +86,8 @@ Open [**http://localhost:3000**](http://localhost:3000) in your browser.
 
 # Known Issues
 
-* The **Invoices & Billing** screen has not been implemented due to time constraints.
-* All remaining screens are implemented using local mock data.
+* **Invoices & Billing** page is implemented, but responsive optimization for smaller screen sizes is still in progress.
+* All data is powered by local mock data.
 
 ---
 
@@ -136,5 +137,6 @@ The application is deployed on **Vercel** and is publicly accessible.
 
 * Built according to the provided Figma design.
 * Focused on reusable components and clean project structure.
-* Responsive across Desktop, Tablet, and Mobile breakpoints.
+* Dashboard, Shipment, and Warehouse pages are fully responsive.
+* Invoices & Billing functionality has been implemented; responsive optimization is currently pending.
 * Uses TypeScript throughout the project.
