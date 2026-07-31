@@ -98,10 +98,9 @@ export default function InvoiceTable({
       columnHelper.accessor("id", {
         header: "Invoice ID",
         cell: (info) => (
-          <span className="inline-flex items-center gap-1.5 font-medium  text-[#856DF3]">
+          <span className="inline-flex items-center gap-1.5 whitespace-nowrap font-medium text-[#856DF3]">
             {info.getValue()}
             <span className="bg-[#F0F0F0] w-5 h-5 flex items-center justify-center text-[#333] rounded-lg"><FiFileText className="h-3 w-3" /></span>
-
           </span>
         ),
       }),
@@ -110,7 +109,7 @@ export default function InvoiceTable({
         cell: (info) => {
           const invoice = info.row.original;
           return (
-            <span className="inline-flex justify-center items-center gap-2">
+            <span className="inline-flex items-center justify-center gap-2 whitespace-nowrap">
               <Image
                 src={invoice.CompanyLogo}
                 alt={invoice.company}
@@ -124,14 +123,14 @@ export default function InvoiceTable({
       }),
       columnHelper.accessor("shippingId", {
         header: "Shipping ID",
-        cell: (info) => <span className="text-neutral-500">#{info.getValue()}</span>,
+        cell: (info) => <span className="whitespace-nowrap text-neutral-500">#{info.getValue()}</span>,
       }),
       columnHelper.accessor("issueDate", {
         header: "Date",
         cell: (info) => {
           const invoice = info.row.original;
           return (
-            <span className="text-neutral-500">
+            <span className="whitespace-nowrap text-neutral-500">
               {invoice.issueDate} <span className="text-neutral-400">(Issued)</span>
               <br />
               {invoice.dueDate} <span className="text-neutral-400">(Due)</span>
@@ -141,7 +140,7 @@ export default function InvoiceTable({
       }),
       columnHelper.accessor("amount", {
         header: "Amount",
-        cell: (info) => <span className="font-medium text-neutral-800">${info.getValue().toLocaleString()}.00</span>,
+        cell: (info) => <span className="whitespace-nowrap font-medium text-neutral-800">${info.getValue().toLocaleString()}.00</span>,
       }),
       columnHelper.accessor("status", {
         header: "Status",
@@ -173,17 +172,17 @@ export default function InvoiceTable({
 
   return (
     <div className="flex h-full flex-col">
-      {/* Top bar */}
-      <div className="flex items-center justify-between gap-3 border-b border-neutral-100 px-5 py-4">
+      {/* Top bar — mobile e stack hobe, sm+ e ek line e thakbe */}
+      <div className="flex flex-col gap-3 border-b border-neutral-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <h2 className="text-lg font-semibold text-neutral-900">Invoices</h2>
-        <div className="flex items-center gap-2">
-          <div className="relative">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 sm:flex-none">
             <FiSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search invoices"
-              className="w-48 rounded-lg border border-neutral-200 bg-neutral-50 py-2 pl-9 pr-3 text-sm text-neutral-700 outline-none focus:border-violet-400 focus:bg-white"
+              className="w-full rounded-lg border border-neutral-200 bg-neutral-50 py-2 pl-9 pr-3 text-sm text-neutral-700 outline-none focus:border-violet-400 focus:bg-white sm:w-48"
             />
           </div>
 
@@ -238,14 +237,15 @@ export default function InvoiceTable({
             className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
           >
             <FiPlus className="h-4 w-4" />
-            New Invoice
+            <span className="hidden sm:inline">New Invoice</span>
+            <span className="sm:hidden">New</span>
           </button>
         </div>
       </div>
 
       {/* Active filter chip */}
       {activeStatusFilter && (
-        <div className="flex items-center gap-2 border-b border-neutral-100 px-5 py-2">
+        <div className="flex items-center gap-2 border-b border-neutral-100 px-4 py-2 sm:px-5">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-600">
             Status: {activeStatusFilter}
             <button onClick={() => applyStatusFilter(null)} className="hover:text-violet-800">
@@ -255,11 +255,11 @@ export default function InvoiceTable({
         </div>
       )}
 
-      {/* Bulk action bar — jokhon 1+ row select kora hoy tokhon dekhabe, na hole render e jabe na */}
+      {/* Bulk action bar — mobile e stack, sm+ e ek row e */}
       {selectedIds.length > 0 && (
-        <div className="flex items-center justify-between border-b border-violet-100 bg-[#F4F2FC] px-5 py-2.5 text-sm">
+        <div className="flex flex-col gap-2 border-b border-violet-100 bg-[#F4F2FC] px-4 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <span className="font-medium text-neutral-700">{selectedIds.length} selected</span>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => {
                 onBulkMarkPaid?.(selectedIds);
@@ -291,20 +291,20 @@ export default function InvoiceTable({
         </div>
       )}
 
-      {/* Table */}
+      {/* Table — mobile e horizontally scroll korbe, column squeeze hobe na */}
       <div className="flex-1 overflow-auto">
-        <table className="w-full border-collapse text-sm">
+        <table className="w-full min-w-[720px] border-collapse text-sm">
           <thead className="sticky top-0 bg-white">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b border-neutral-100">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-2 py-2 text-left text-xs font-medium text-neutral-400 first:pl-5 last:pr-5"
+                    className="px-2 py-2 text-left text-xs font-medium text-neutral-400 first:pl-4 last:pr-4 sm:first:pl-5 sm:last:pr-5"
                   >
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <button
-                        className="inline-flex items-center gap-1 hover:text-neutral-600"
+                        className="inline-flex items-center gap-1 whitespace-nowrap hover:text-neutral-600"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
@@ -329,7 +329,7 @@ export default function InvoiceTable({
                     }`}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-3 py-3 text-[10px] align-top first:pl-5 last:pr-5">
+                    <td key={cell.id} className="px-3 py-3 text-[10px] align-top first:pl-4 last:pr-4 sm:first:pl-5 sm:last:pr-5">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { FiEdit2, FiPause, FiSend, FiChevronUp, FiChevronDown } from "react-icons/fi";
+import { FiEdit2, FiPause, FiSend, FiChevronUp, FiChevronDown, FiChevronLeft } from "react-icons/fi";
 import { Invoice } from "@/types/invoice";
 import StatusBadge from "./StatusBadge";
 
@@ -9,6 +9,7 @@ interface InvoiceDetailsProps {
   onEdit?: (invoice: Invoice) => void;
   onHold?: (invoice: Invoice) => void;
   onSend?: (invoice: Invoice) => void;
+  onBack?: () => void; // mobile e list e ferot jaoar jonno (back chevron)
 }
 
 // Shob calculation ekhane centralized. Item add/remove korle ei function
@@ -31,7 +32,7 @@ function SortIcon() {
   );
 }
 
-export default function InvoiceDetails({ invoice, onEdit, onHold, onSend }: InvoiceDetailsProps) {
+export default function InvoiceDetails({ invoice, onEdit, onHold, onSend, onBack }: InvoiceDetailsProps) {
   if (!invoice) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-neutral-400">
@@ -44,10 +45,19 @@ export default function InvoiceDetails({ invoice, onEdit, onHold, onSend }: Invo
 
   return (
     <div className="flex h-full flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4">
-        <h2 className="text-lg font-semibold text-neutral-900">Invoice Details</h2>
+      {/* Header — mobile e back chevron + title, action button gulo bottom bar e move kora */}
+      <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-4 sm:px-6">
         <div className="flex items-center gap-2">
+          <button
+            onClick={onBack}
+            className="-ml-1 rounded-lg p-1 text-neutral-600 hover:bg-neutral-50 sm:hidden"
+            aria-label="Back"
+          >
+            <FiChevronLeft className="h-5 w-5" />
+          </button>
+          <h2 className="text-lg font-semibold text-neutral-900">Invoice Details</h2>
+        </div>
+        <div className="hidden items-center gap-2 sm:flex">
           <button
             onClick={() => onEdit?.(invoice)}
             className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
@@ -72,7 +82,7 @@ export default function InvoiceDetails({ invoice, onEdit, onHold, onSend }: Invo
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto px-6 py-5">
+      <div className="flex-1 overflow-auto px-4 py-5 sm:px-6">
         {/* Invoice number + dates */}
         <div className="flex items-start justify-between">
           <div>
@@ -93,8 +103,8 @@ export default function InvoiceDetails({ invoice, onEdit, onHold, onSend }: Invo
           </div>
         </div>
 
-        {/* Bill from / to */}
-        <div className="mt-5 grid grid-cols-2 gap-4 rounded-xl bg-[#F5F5F5] p-5">
+        {/* Bill from / to — mobile e ek column e stack, sm+ e 2 column grid */}
+        <div className="mt-5 grid grid-cols-1 gap-4 rounded-xl bg-[#F5F5F5] p-5 sm:grid-cols-2">
           <div>
             <p className="text-xs text-neutral-400">Bill From</p>
             <p className="mt-1.5 font-semibold text-base text-neutral-900">{invoice.billFrom.name}</p>
@@ -102,10 +112,14 @@ export default function InvoiceDetails({ invoice, onEdit, onHold, onSend }: Invo
             <p className="mt-1.5 text-[12px] leading-5  text-[#757575]">{invoice.billFrom.address}</p>
             <p className="text-xs text-[11px] text-[#757575]">{invoice.billFrom.phone}</p>
           </div>
-          <div className="text-right">
+
+          {/* Mobile-only divider — sm+ e grid nijei column split kore dey, tai eta lage na */}
+          <div className="border-t border-neutral-200 sm:hidden" />
+
+          <div className="sm:text-right">
             <p className="text-xs text-neutral-400">Bill To</p>
-            <p className="mt-1.5 text-[11px] text-[#757575]">{invoice.billTo.name}</p>
-            <p className="text-sm text-neutral-500">{invoice.billTo.email}</p>
+            <p className="mt-1.5 font-semibold text-base text-neutral-900 sm:text-sm sm:font-normal">{invoice.billTo.name}</p>
+            <p className="text-[12px] text-[#757575] sm:text-sm sm:text-neutral-500">{invoice.billTo.email}</p>
             <p className="mt-1.5 text-[12px] leading-5 text-[#757575]">{invoice.billTo.address}</p>
             <p className="text-xs text-[11px] text-[#757575]">{invoice.billTo.phone}</p>
           </div>
@@ -115,7 +129,7 @@ export default function InvoiceDetails({ invoice, onEdit, onHold, onSend }: Invo
         {/* Package summary */}
         <div className="border mt-3 border-[#E0E0E0] rounded-2xl">
           <div className="" >
-            <div className="">
+            <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[#E0E0E0] rouneded-2xl bg-[#F0F0F0] rounded-2xl text-left text-xs text-[#333333]">
@@ -131,13 +145,14 @@ export default function InvoiceDetails({ invoice, onEdit, onHold, onSend }: Invo
                         <SortIcon />
                       </span>
                     </th>
-                    <th className="py-2.5 text-right font-medium">
+                    {/* Price o Qty column mobile e hide kore Description er niche merge kora hoyeche */}
+                    <th className="hidden py-2.5 text-right font-medium sm:table-cell">
                       <span className="inline-flex items-center gap-1">
                         Price
                         <SortIcon />
                       </span>
                     </th>
-                    <th className="py-2.5 text-right font-medium">
+                    <th className="hidden py-2.5 text-right font-medium sm:table-cell">
                       <span className="inline-flex items-center gap-1">
                         Qty
                         <SortIcon />
@@ -148,14 +163,20 @@ export default function InvoiceDetails({ invoice, onEdit, onHold, onSend }: Invo
                 </thead>
                 <tbody>
                   {invoice.items.map((item) => (
-                    <tr key={item.id} px-2 className="border-b border-b-[#E0E0E0] text-[11px]">
-                      <td className="py-3 pl-3 text-neutral-800">{item.description}</td>
+                    <tr key={item.id} className="border-b border-b-[#E0E0E0] text-[11px]">
+                      <td className="py-3 pl-3 text-neutral-800">
+                        {item.description}
+                        {/* Mobile e price x qty ekhanei dekhabe, alada column lagbe na */}
+                        <p className="mt-0.5 text-[10px] text-violet-500 sm:hidden">
+                          ${item.price.toFixed(2)} x {item.qty}
+                        </p>
+                      </td>
                       <td className="py-3">
                         <p className="font-medium text-neutral-800">{item.shipmentType}</p>
                         <p className="text-[10px] text-neutral-400">{item.shipmentSubtype}</p>
                       </td>
-                      <td className="py-3 text-right text-neutral-500">${item.price.toFixed(2)}</td>
-                      <td className="py-3 text-right text-neutral-500">{item.qty}</td>
+                      <td className="hidden py-3 text-right text-neutral-500 sm:table-cell">${item.price.toFixed(2)}</td>
+                      <td className="hidden py-3 text-right text-neutral-500 sm:table-cell">{item.qty}</td>
                       <td className="py-3 pr-3 text-right font-medium text-neutral-800">
                         ${(item.price * item.qty).toFixed(2)}
                       </td>
@@ -165,8 +186,8 @@ export default function InvoiceDetails({ invoice, onEdit, onHold, onSend }: Invo
               </table>
             </div>
 
-            {/* Totals */}
-            <div className="ml-auto mt-4 w-60 pr-3 space-y-2 text-xs pb-4">
+            {/* Totals — mobile e full width, sm+ e right-aligned fixed width */}
+            <div className="ml-auto mt-4 w-full px-3 space-y-2 text-xs pb-4 sm:w-60 sm:pr-3">
               <div className="flex justify-between text-neutral-500">
                 <span>Sub Total</span>
                 <span>${subTotal.toFixed(2)}</span>
@@ -190,9 +211,32 @@ export default function InvoiceDetails({ invoice, onEdit, onHold, onSend }: Invo
       </div>
 
       {/* Note */}
-      <div className="border-t border-[#E0E0E0] px-6 py-4">
+      <div className="border-t border-[#E0E0E0] px-4 py-4 sm:px-6">
         <p className="text-xs font-medium text-neutral-400">Note</p>
         <p className="mt-1 text-sm text-neutral-500">{invoice.note}</p>
+      </div>
+
+      {/* Bottom action bar — mobile e only, desktop e header e already ache */}
+      <div className="flex items-center gap-2 border-t border-neutral-100 px-4 py-3 sm:hidden">
+        <button
+          onClick={() => onEdit?.(invoice)}
+          className="flex-1 rounded-lg bg-neutral-100 px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-200"
+        >
+          Edit
+        </button>
+        <button
+          onClick={() => onHold?.(invoice)}
+          className="flex-1 rounded-lg bg-neutral-100 px-3 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-200"
+        >
+          Hold
+        </button>
+        <button
+          onClick={() => onSend?.(invoice)}
+          className="flex-[1.6] inline-flex items-center justify-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-3 text-sm font-medium text-white hover:bg-neutral-800"
+        >
+          <FiSend className="h-3.5 w-3.5" />
+          Send Invoice
+        </button>
       </div>
     </div>
   );

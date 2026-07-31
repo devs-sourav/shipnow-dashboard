@@ -119,18 +119,18 @@ export default function InvoiceEditModal({ mode, invoice, onClose, onSave }: Inv
   return (
     <div
       onClick={handleClose}
-      className={`fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4 backdrop-blur-[2px] transition-opacity duration-200 ease-out ${
+      className={`fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-[2px] transition-opacity duration-200 ease-out sm:px-4 ${
         showAnimated ? "opacity-100" : "opacity-0"
       }`}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`flex max-h-[90vh] w-[80%] lg:w-full max-w-3xl flex-col rounded-2xl bg-white shadow-2xl transition-all duration-200 ease-out ${
+        className={`flex h-full w-full max-w-3xl flex-col bg-white shadow-2xl transition-all duration-200 ease-out sm:h-auto sm:max-h-[90vh] sm:w-[90%] sm:rounded-2xl lg:w-full ${
           showAnimated ? "translate-y-0 scale-100 opacity-100" : "translate-y-3 scale-[0.97] opacity-0"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between rounded-t-2xl border-b border-neutral-100 bg-white px-6 py-4">
+        <div className="flex items-center justify-between border-b border-neutral-100 bg-white px-4 py-4 sm:rounded-t-2xl sm:px-6">
           <div>
             <h2 className="text-lg font-semibold text-neutral-900">
               {mode === "new" ? "Create New Invoice" : `Edit Invoice`}
@@ -149,7 +149,7 @@ export default function InvoiceEditModal({ mode, invoice, onClose, onSave }: Inv
           </button>
         </div>
 
-        <div className="flex-1 overflow-auto px-6 py-5 space-y-6">
+        <div className="flex-1 overflow-auto px-4 py-5 space-y-6 sm:px-6">
           {errors && (
             <div className="flex items-center gap-2 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-600 animate-in fade-in slide-in-from-top-1">
               <FiAlertCircle className="h-3.5 w-3.5 shrink-0" />
@@ -160,7 +160,7 @@ export default function InvoiceEditModal({ mode, invoice, onClose, onSave }: Inv
           {/* Status selector */}
           <div>
             <label className="text-xs font-medium text-neutral-400">Invoice Status</label>
-            <div className="mt-2 grid grid-cols-4 gap-2">
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
               {STATUS_LIST.map((status) => {
                 const config = STATUS_CONFIG[status];
                 const Icon = config.icon;
@@ -185,7 +185,7 @@ export default function InvoiceEditModal({ mode, invoice, onClose, onSave }: Inv
           </div>
 
           {/* Company + dates */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="text-xs font-medium text-neutral-400">Company Name</label>
               <input
@@ -221,7 +221,7 @@ export default function InvoiceEditModal({ mode, invoice, onClose, onSave }: Inv
           </div>
 
           {/* Bill from / to */}
-          <div className="grid grid-cols-2 gap-4 rounded-xl bg-[#F5F5F5] p-4">
+          <div className="grid grid-cols-1 gap-4 rounded-xl bg-[#F5F5F5] p-4 sm:grid-cols-2">
             {(["billFrom", "billTo"] as const).map((which) => (
               <div key={which} className="space-y-2">
                 <p className="text-xs font-semibold text-neutral-500">
@@ -255,7 +255,7 @@ export default function InvoiceEditModal({ mode, invoice, onClose, onSave }: Inv
             ))}
           </div>
 
-          {/* Items */}
+          {/* Items — mobile e card-style stack, sm+ e 12-col grid row */}
           <div>
             <div className="mb-2 flex items-center justify-between">
               <p className="text-sm font-semibold text-neutral-900">Items</p>
@@ -270,46 +270,47 @@ export default function InvoiceEditModal({ mode, invoice, onClose, onSave }: Inv
               {form.items.map((item) => (
                 <div
                   key={item.id}
-                  className="grid grid-cols-12 items-center gap-2 rounded-lg border border-neutral-100 p-2 transition-colors hover:border-neutral-200"
+                  className="grid grid-cols-2 items-center gap-2 rounded-lg border border-neutral-100 p-2 transition-colors hover:border-neutral-200 sm:grid-cols-12"
                 >
                   <input
                     placeholder="Description"
                     value={item.description}
                     onChange={(e) => updateItem(item.id, "description", e.target.value)}
-                    className="col-span-4 rounded-md border border-neutral-200 px-2 py-1.5 text-xs outline-none focus:border-violet-400"
+                    className="col-span-2 rounded-md border border-neutral-200 px-2 py-1.5 text-xs outline-none focus:border-violet-400 sm:col-span-4"
                   />
                   <input
                     placeholder="Shipment Type"
                     value={item.shipmentType}
                     onChange={(e) => updateItem(item.id, "shipmentType", e.target.value)}
-                    className="col-span-3 rounded-md border border-neutral-200 px-2 py-1.5 text-xs outline-none focus:border-violet-400"
+                    className="col-span-1 rounded-md border border-neutral-200 px-2 py-1.5 text-xs outline-none focus:border-violet-400 sm:col-span-3"
                   />
                   <input
                     placeholder="Subtype"
                     value={item.shipmentSubtype}
                     onChange={(e) => updateItem(item.id, "shipmentSubtype", e.target.value)}
-                    className="col-span-2 rounded-md border border-neutral-200 px-2 py-1.5 text-xs outline-none focus:border-violet-400"
+                    className="col-span-1 rounded-md border border-neutral-200 px-2 py-1.5 text-xs outline-none focus:border-violet-400 sm:col-span-2"
                   />
                   <input
                     type="number"
                     placeholder="Price"
                     value={item.price}
                     onChange={(e) => updateItem(item.id, "price", Number(e.target.value))}
-                    className="col-span-1 rounded-md border border-neutral-200 px-2 py-1.5 text-xs outline-none focus:border-violet-400"
+                    className="col-span-1 rounded-md border border-neutral-200 px-2 py-1.5 text-xs outline-none focus:border-violet-400 sm:col-span-1"
                   />
                   <input
                     type="number"
                     placeholder="Qty"
                     value={item.qty}
                     onChange={(e) => updateItem(item.id, "qty", Number(e.target.value))}
-                    className="col-span-1 rounded-md border border-neutral-200 px-2 py-1.5 text-xs outline-none focus:border-violet-400"
+                    className="col-span-1 rounded-md border border-neutral-200 px-2 py-1.5 text-xs outline-none focus:border-violet-400 sm:col-span-1"
                   />
                   <button
                     onClick={() => removeItem(item.id)}
                     disabled={form.items.length === 1}
-                    className="col-span-1 flex justify-center text-neutral-400 transition-colors hover:text-red-500 disabled:opacity-30"
+                    className="col-span-2 flex items-center justify-center gap-1 rounded-md py-1.5 text-neutral-400 transition-colors hover:text-red-500 disabled:opacity-30 sm:col-span-1 sm:py-0"
                   >
                     <FiTrash2 className="h-3.5 w-3.5" />
+                    <span className="text-xs sm:hidden">Remove</span>
                   </button>
                 </div>
               ))}
@@ -317,7 +318,7 @@ export default function InvoiceEditModal({ mode, invoice, onClose, onSave }: Inv
           </div>
 
           {/* Tax / Fee / Note */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <label className="text-xs font-medium text-neutral-400">Tax %</label>
               <input
@@ -354,17 +355,17 @@ export default function InvoiceEditModal({ mode, invoice, onClose, onSave }: Inv
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-2 rounded-b-2xl border-t border-neutral-100 bg-white px-6 py-4">
+        {/* Footer — mobile e full-width stacked button, sm+ e right-aligned row */}
+        <div className="flex flex-col-reverse gap-2 border-t border-neutral-100 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-end sm:rounded-b-2xl sm:px-6">
           <button
             onClick={handleClose}
-            className="rounded-lg border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50"
+            className="w-full rounded-lg border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 sm:w-auto"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-800 active:scale-[0.98]"
+            className="w-full rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-800 active:scale-[0.98] sm:w-auto"
           >
             {mode === "new" ? "Create Invoice" : "Save Changes"}
           </button>
